@@ -1,5 +1,7 @@
 # YgoMDStartingHandRecorder（YGO 起手记录）
 
+[![CI](https://github.com/al4oks/YgoMDStartingHandRecorder/actions/workflows/ci.yml/badge.svg)](https://github.com/al4oks/YgoMDStartingHandRecorder/actions/workflows/ci.yml)
+
 被动记录《游戏王 MASTER DUEL》（简中、窗口化客户端）每局**起手 5 张**（先手/后手均 5 张）的本地工具：手动点一次「先手截图 / 后手截图」即完成 截图 → OCR 识别 → 存证 → 入库，并按卡组统计上手率。无实时循环、不录视频、不抽帧。
 
 ## 功能特性
@@ -137,7 +139,7 @@ Qcoder新人首月套餐5折+qwen 4.0新发布打折，弄个最低档的套餐�
 
 本项目源码以 [MIT](LICENSE) 许可证发布。
 
-随单文件 exe 分发的第三方组件（.NET 运行时、Avalonia、SkiaSharp、PaddleOCR 及模型权重、OpenCV 等）各自遵循其许可证，清单见 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)；再分发二进制时请保留该声明。
+随单文件 exe 分发的第三方组件（.NET 运行时、Avalonia、SkiaSharp、PaddleOCR 及模型权重、OpenCV 等）各自遵循其许可证，清单见 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)（Apache-2.0 全文见 [licenses/APACHE-2.0.txt](licenses/APACHE-2.0.txt)）；再分发二进制时请保留该声明与全文。
 
 ## 鸣谢
 

@@ -2,6 +2,8 @@
 
 单文件发布（self-contained + PublishSingleFile）会将下列组件的运行时/原生库/模型权重打包进 exe。再分发二进制时请保留本声明。源码仓库本身不含这些组件的二进制（经 NuGet 还原）。
 
+Apache-2.0 许可证全文见 [licenses/APACHE-2.0.txt](licenses/APACHE-2.0.txt)。下表所有 Apache-2.0 组件均以**未修改**的 NuGet 包形式引用（无源码改动）；再分发二进制时请随附该全文与本声明。
+
 | 组件 | 版本 | 许可证 | 说明 |
 |---|---|---|---|
 | .NET Runtime / Windows Desktop 参考 assemblies | 11.0 | MIT | Microsoft；含 System.Drawing 等 |
