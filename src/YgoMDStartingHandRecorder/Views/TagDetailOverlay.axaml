@@ -1,0 +1,52 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ctl="clr-namespace:YgoMDStartingHandRecorder.Controls"
+             xmlns:vm="clr-namespace:YgoMDStartingHandRecorder.ViewModels"
+             x:Class="YgoMDStartingHandRecorder.Views.TagDetailOverlay"
+             x:DataType="vm:TagDetailViewModel">
+  <Grid Background="#B804060A">
+    <ctl:CutBorder Cut="14" Width="640" MaxHeight="640" HorizontalAlignment="Center" VerticalAlignment="Center"
+                   Background="{StaticResource Panel2Brush}" BorderBrush="{StaticResource LineHiBrush}"
+                   BorderThickness="1" BoxShadow="0 12 40 0 #99000000">
+      <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
+        <Border Grid.Row="0" Height="40" Background="{StaticResource HeadSteel}"
+                BorderBrush="{StaticResource SteelEdgeBrush}" BorderThickness="0,0,0,1"
+                BoxShadow="inset 0 1 0 0 #99FFFFFF">
+          <TextBlock Text="{Binding Title}" Margin="16,0" FontWeight="Bold" FontSize="14"
+                     Foreground="{StaticResource SteelInkBrush}" VerticalAlignment="Center" />
+        </Border>
+        <TextBlock Grid.Row="1" Text="{Binding TheoText}" Margin="16,10,16,0" FontSize="11.5"
+                   Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" />
+        <StackPanel Grid.Row="2" Margin="16,6,16,8" Spacing="3">
+          <TextBlock Text="{Binding SummaryText}" FontSize="12"
+                     Foreground="{StaticResource GoldBrush}" FontFamily="{StaticResource NumFont}" />
+          <TextBlock Text="{Binding MeanText}" FontSize="11.5"
+                     Foreground="{StaticResource MutedBrush}" FontFamily="{StaticResource NumFont}" />
+        </StackPanel>
+        <StackPanel Grid.Row="3" Margin="16,0,16,10">
+          <Grid ColumnDefinitions="60,*,*,*">
+            <TextBlock Text="上手张数" Foreground="{StaticResource DimBrush}" FontSize="11" />
+            <TextBlock Grid.Column="1" Text="合计" Foreground="{StaticResource DimBrush}" FontSize="11" />
+            <TextBlock Grid.Column="2" Text="先手" Foreground="{StaticResource DimBrush}" FontSize="11" />
+            <TextBlock Grid.Column="3" Text="后手" Foreground="{StaticResource DimBrush}" FontSize="11" />
+          </Grid>
+          <ItemsControl ItemsSource="{Binding Rows}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:DistRowViewModel">
+                <Grid ColumnDefinitions="60,*,*,*" Margin="0,4,0,0">
+                  <TextBlock Text="{Binding K, StringFormat={}{0} 张}" Foreground="White" FontSize="12" FontWeight="Bold" />
+                  <TextBlock Grid.Column="1" Text="{Binding TotalText}" Foreground="#CFD6E4" FontSize="11.5" FontFamily="{StaticResource NumFont}" />
+                  <TextBlock Grid.Column="2" Text="{Binding FirstText}" Foreground="#CFD6E4" FontSize="11.5" FontFamily="{StaticResource NumFont}" />
+                  <TextBlock Grid.Column="3" Text="{Binding SecondText}" Foreground="#CFD6E4" FontSize="11.5" FontFamily="{StaticResource NumFont}" />
+                </Grid>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="14,0,14,14">
+          <Button Classes="md md-ghost md-sm" Content="关闭" Command="{Binding CloseCommand}" />
+        </StackPanel>
+      </Grid>
+    </ctl:CutBorder>
+  </Grid>
+</UserControl>

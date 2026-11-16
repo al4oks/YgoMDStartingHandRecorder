@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Ygo.CardLib/Ygo.CardLib.csproj" />
+    <Project Path="src/Ygo.Labeler/Ygo.Labeler.csproj" />
+    <Project Path="src/Ygo.Recognition/Ygo.Recognition.csproj" />
+    <Project Path="src/Ygo.Records/Ygo.Records.csproj" />
+    <Project Path="src/YgoMDStartingHandRecorder/YgoMDStartingHandRecorder.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Ygo.CardLib.Smoke/Ygo.CardLib.Smoke.csproj" />
+    <Project Path="tests/Ygo.Recog.Eval/Ygo.Recog.Eval.csproj" />
+    <Project Path="tests/Ygo.Records.Smoke/Ygo.Records.Smoke.csproj" />
+  </Folder>
+</Solution>

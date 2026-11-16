@@ -1,0 +1,55 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:YgoMDStartingHandRecorder.ViewModels"
+        x:Class="YgoMDStartingHandRecorder.Views.MiniWindow"
+        x:DataType="vm:CaptureViewModel"
+        Title="YGO 悬浮窗"
+        Width="320" SizeToContent="Height"
+        MinWidth="260"
+        Topmost="True"
+        SystemDecorations="None"
+        Background="#0B0F1A"
+        CanResize="True">
+  <DockPanel>
+    <!-- 标题栏：拖拽 + 置顶切换 + 关闭 -->
+    <Border DockPanel.Dock="Top" x:Name="TitleBar" Height="30" Background="#131826" BorderBrush="#1E2638" BorderThickness="0,0,0,1">
+      <Grid ColumnDefinitions="*,Auto,Auto">
+        <TextBlock Text="YGO 悬浮窗" FontSize="11" FontWeight="Bold" Foreground="#CFD6E4"
+                   Margin="10,0,0,0" VerticalAlignment="Center" />
+        <Button Grid.Column="1" x:Name="PinBtn" Classes="md md-ghost md-xs" Content="取消置顶" Margin="0,0,4,0"
+                Click="OnPin" />
+        <Button Grid.Column="2" Classes="md md-dghost md-xs" Content="×" Margin="0,0,6,0" Click="OnClose" />
+      </Grid>
+    </Border>
+    <StackPanel Margin="10,10,10,10" Spacing="8">
+      <Grid ColumnDefinitions="*,*">
+        <Button Classes="md md-blue" Height="40" Content="先手截图" Command="{Binding CaptureFirstCommand}" />
+        <Button Grid.Column="1" Classes="md md-red" Height="40" Content="后手截图" Margin="8,0,0,0"
+                Command="{Binding CaptureSecondCommand}" />
+      </Grid>
+      <TextBlock Text="{Binding DeckName, StringFormat='卡组：{0}'}" Foreground="{StaticResource DimBrush}" FontSize="10.5" />
+      <Border Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource LineBrush}" BorderThickness="1" Padding="8,6">
+        <Grid>
+          <TextBlock Text="尚未截图" IsVisible="{Binding !HasResult}" Foreground="{StaticResource DimBrush}"
+                     FontSize="11" HorizontalAlignment="Center" Margin="0,10" />
+          <ItemsControl ItemsSource="{Binding Slots}" IsVisible="{Binding HasResult}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:SlotViewModel">
+                <Grid ColumnDefinitions="18,*,Auto" Margin="0,3">
+                  <TextBlock Text="{Binding Index}" Foreground="{StaticResource DimBrush}" FontSize="10.5"
+                             FontFamily="{StaticResource NumFont}" VerticalAlignment="Center" />
+                  <TextBlock Grid.Column="1" Text="{Binding Name}" Foreground="{Binding NameBrush}" FontSize="12"
+                             FontWeight="SemiBold" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                  <TextBlock Grid.Column="2" Text="{Binding TotalText}" Foreground="{StaticResource GoldBrush}"
+                             FontSize="11" FontFamily="{StaticResource NumFont}" VerticalAlignment="Center" />
+                </Grid>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </Grid>
+      </Border>
+      <TextBlock Text="只展示卡名与合计上手率;置信度/先后手明细请开主程序" Foreground="{StaticResource DimBrush}"
+                 FontSize="9.5" TextWrapping="Wrap" />
+    </StackPanel>
+  </DockPanel>
+</Window>

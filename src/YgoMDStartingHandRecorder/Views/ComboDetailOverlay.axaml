@@ -1,0 +1,55 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ctl="clr-namespace:YgoMDStartingHandRecorder.Controls"
+             xmlns:vm="clr-namespace:YgoMDStartingHandRecorder.ViewModels"
+             x:Class="YgoMDStartingHandRecorder.Views.ComboDetailOverlay"
+             x:DataType="vm:ComboDetailViewModel">
+  <Grid Background="#B804060A">
+    <ctl:CutBorder Cut="14" Width="760" MaxHeight="660" HorizontalAlignment="Center" VerticalAlignment="Center"
+                   Background="{StaticResource Panel2Brush}" BorderBrush="{StaticResource LineHiBrush}"
+                   BorderThickness="1" BoxShadow="0 12 40 0 #99000000">
+      <Grid RowDefinitions="Auto,Auto,*,Auto">
+        <Border Grid.Row="0" Height="40" Background="{StaticResource HeadSteel}"
+                BorderBrush="{StaticResource SteelEdgeBrush}" BorderThickness="0,0,0,1"
+                BoxShadow="inset 0 1 0 0 #99FFFFFF">
+          <TextBlock Text="{Binding Title}" Margin="16,0" FontWeight="Bold" FontSize="14"
+                     Foreground="{StaticResource SteelInkBrush}" VerticalAlignment="Center" />
+        </Border>
+        <StackPanel Grid.Row="1" Margin="16,10,16,8" Spacing="3">
+          <TextBlock Text="{Binding SummaryText}" FontSize="12"
+                     Foreground="{StaticResource GoldBrush}" FontFamily="{StaticResource NumFont}" />
+          <TextBlock Text="{Binding TheoText}" FontSize="11.5"
+                     Foreground="{StaticResource MutedBrush}" FontFamily="{StaticResource NumFont}" />
+        </StackPanel>
+        <ScrollViewer Grid.Row="2" Margin="16,0,16,10">
+          <ItemsControl ItemsSource="{Binding Entries}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:ComboEntryStatViewModel">
+                <ctl:CutBorder Cut="6" Margin="0,0,0,8" Background="{StaticResource SlotBg}"
+                               BorderBrush="{StaticResource LineBrush}" BorderThickness="1">
+                  <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto" Margin="10,7">
+                    <StackPanel>
+                      <TextBlock Text="{Binding Name}" Foreground="White" FontSize="12" FontWeight="Bold" />
+                      <TextBlock Text="{Binding CardsText}" Foreground="{StaticResource DimBrush}" FontSize="10.5" TextWrapping="Wrap" />
+                    </StackPanel>
+                    <TextBlock Grid.Column="1" Text="{Binding TheoText, StringFormat=理论 {0}}" Foreground="{StaticResource DimBrush}"
+                               FontSize="11" FontFamily="{StaticResource NumFont}" VerticalAlignment="Center" Margin="10,0,0,0" />
+                    <TextBlock Grid.Column="2" Text="{Binding TotalText, StringFormat=合 {0}}" Foreground="{Binding TotalBrush}"
+                               FontSize="11" FontFamily="{StaticResource NumFont}" VerticalAlignment="Center" Margin="10,0,0,0" />
+                    <TextBlock Grid.Column="3" Text="{Binding FirstText, StringFormat=先 {0}}" Foreground="{Binding FirstBrush}"
+                               FontSize="11" FontFamily="{StaticResource NumFont}" VerticalAlignment="Center" Margin="10,0,0,0" />
+                    <TextBlock Grid.Column="4" Text="{Binding SecondText, StringFormat=后 {0}}" Foreground="{Binding SecondBrush}"
+                               FontSize="11" FontFamily="{StaticResource NumFont}" VerticalAlignment="Center" Margin="10,0,0,0" />
+                  </Grid>
+                </ctl:CutBorder>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </ScrollViewer>
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="14,0,14,14">
+          <Button Classes="md md-ghost md-sm" Content="关闭" Command="{Binding CloseCommand}" />
+        </StackPanel>
+      </Grid>
+    </ctl:CutBorder>
+  </Grid>
+</UserControl>

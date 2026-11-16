@@ -1,0 +1,149 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ctl="clr-namespace:YgoMDStartingHandRecorder.Controls">
+
+  <Styles.Resources>
+    <!-- 缺图占位图标（图像划除），states C：未识别用「?」、CDN 缺图用此图标 -->
+    <PathGeometry x:Key="ImgOffGeo" Figures="M3,5 H21 V19 H3 Z M3,17 L8,13 L12,16 L15,14 L21,18 M4,4 L20,20" />
+    <!-- 自绘 ListBoxItem 模板：去掉 Fluent 蓝色焦点环，换 MD hover/selected -->
+    <ControlTheme x:Key="MdListItem" TargetType="ListBoxItem">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+      <Setter Property="BorderBrush" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="Padding" Value="10,7" />
+      <Setter Property="MinHeight" Value="0" />
+      <Setter Property="FontSize" Value="13" />
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderThickness="{TemplateBinding BorderThickness}"
+                  Padding="{TemplateBinding Padding}">
+            <ContentPresenter Content="{TemplateBinding Content}"
+                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                              VerticalAlignment="Center" />
+          </Border>
+        </ControlTemplate>
+      </Setter>
+      <Style Selector="^:pointerover">
+        <Setter Property="Background" Value="#222A3E" />
+        <Setter Property="Foreground" Value="White" />
+      </Style>
+      <Style Selector="^:selected">
+        <Setter Property="Background" Value="#2E3850" />
+        <Setter Property="Foreground" Value="White" />
+      </Style>
+    </ControlTheme>
+  </Styles.Resources>
+
+  <!-- ===== MD 按钮基样式：切角 + 顶部内高光 ===== -->
+  <Style Selector="Button.md">
+    <Setter Property="Height" Value="38" />
+    <Setter Property="Padding" Value="14,0" />
+    <Setter Property="Foreground" Value="White" />
+    <Setter Property="FontFamily" Value="{StaticResource UiFont}" />
+    <Setter Property="FontWeight" Value="Bold" />
+    <Setter Property="FontSize" Value="13" />
+    <Setter Property="Background" Value="{StaticResource Panel3Brush}" />
+    <Setter Property="BorderBrush" Value="{StaticResource LineHiBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="Template">
+      <ControlTemplate>
+        <ctl:CutBorder Cut="7" Background="{TemplateBinding Background}"
+                       BorderBrush="{TemplateBinding BorderBrush}"
+                       BorderThickness="{TemplateBinding BorderThickness}"
+                       BoxShadow="inset 0 1 0 0 #38FFFFFF">
+          <ContentPresenter Content="{TemplateBinding Content}"
+                            HorizontalAlignment="Center" VerticalAlignment="Center"
+                            Margin="{TemplateBinding Padding}" />
+        </ctl:CutBorder>
+      </ControlTemplate>
+    </Setter>
+  </Style>
+  <Style Selector="Button.md:pointerover">
+    <Setter Property="Opacity" Value="0.92" />
+  </Style>
+  <Style Selector="Button.md:pressed">
+    <Setter Property="Opacity" Value="0.8" />
+  </Style>
+  <Style Selector="Button.md:disabled">
+    <Setter Property="Opacity" Value="0.4" />
+  </Style>
+
+  <Style Selector="Button.md-steel">
+    <Setter Property="Background" Value="{StaticResource BtnSteel}" />
+    <Setter Property="BorderBrush" Value="{StaticResource SteelEdgeBrush}" />
+    <Setter Property="Foreground" Value="{StaticResource SteelInkBrush}" />
+  </Style>
+  <Style Selector="Button.md-red">
+    <Setter Property="Background" Value="{StaticResource BtnRed}" />
+    <Setter Property="BorderBrush" Value="#5A0D15" />
+  </Style>
+  <Style Selector="Button.md-blue">
+    <Setter Property="Background" Value="{StaticResource BtnBlue}" />
+    <Setter Property="BorderBrush" Value="#0E3A66" />
+  </Style>
+  <Style Selector="Button.md-gold">
+    <Setter Property="Background" Value="{StaticResource BtnGold}" />
+    <Setter Property="BorderBrush" Value="#8A6D2A" />
+    <Setter Property="Foreground" Value="#241A05" />
+  </Style>
+  <Style Selector="Button.md-ghost">
+    <Setter Property="Background" Value="#161C2B" />
+    <Setter Property="BorderBrush" Value="{StaticResource LineBrush}" />
+    <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+    <Setter Property="FontWeight" Value="Normal" />
+  </Style>
+  <Style Selector="Button.md-ghost /template/ ctl|CutBorder">
+    <Setter Property="BoxShadow" Value="none" />
+  </Style>
+  <Style Selector="Button.md-dghost">
+    <Setter Property="Background" Value="#1A0D12" />
+    <Setter Property="BorderBrush" Value="#66202A" />
+    <Setter Property="Foreground" Value="#FF8A94" />
+  </Style>
+  <Style Selector="Button.md-dghost /template/ ctl|CutBorder">
+    <Setter Property="BoxShadow" Value="none" />
+  </Style>
+
+  <Style Selector="Button.md-big">
+    <Setter Property="Height" Value="50" />
+    <Setter Property="FontSize" Value="15" />
+    <Setter Property="Padding" Value="22,0" />
+  </Style>
+  <Style Selector="Button.md-sm">
+    <Setter Property="Height" Value="30" />
+    <Setter Property="FontSize" Value="12" />
+    <Setter Property="Padding" Value="10,0" />
+  </Style>
+  <Style Selector="Button.md-xs">
+    <Setter Property="Height" Value="26" />
+    <Setter Property="FontSize" Value="11" />
+    <Setter Property="Padding" Value="8,0" />
+  </Style>
+
+  <!-- ===== 暗色列表（下拉 / 选卡） ===== -->
+  <Style Selector="ListBox.md">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="2" />
+    <Setter Property="ItemContainerTheme" Value="{StaticResource MdListItem}" />
+    <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+  </Style>
+
+  <!-- ===== 暗色输入框 ===== -->
+  <Style Selector="TextBox.md">
+    <Setter Property="Background" Value="#0D1220" />
+    <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+    <Setter Property="BorderBrush" Value="{StaticResource LineBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="0" />
+    <Setter Property="FontFamily" Value="{StaticResource UiFont}" />
+    <Setter Property="CaretBrush" Value="{StaticResource GoldBrush}" />
+    <Setter Property="SelectionBrush" Value="#66B6C1D3" />
+  </Style>
+
+</Styles>

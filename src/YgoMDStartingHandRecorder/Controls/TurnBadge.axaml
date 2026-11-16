@@ -1,0 +1,15 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="YgoMDStartingHandRecorder.Controls.TurnBadge"
+             Width="58" Height="50">
+  <Panel>
+    <Path x:Name="HexPath" Stretch="None"
+          Data="M14.5,0 L43.5,0 L58,25 L43.5,50 L14.5,50 L0,25 Z" />
+    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="0">
+      <TextBlock x:Name="ZhText" FontSize="15" FontWeight="Bold" Foreground="White"
+                 HorizontalAlignment="Center" />
+      <TextBlock x:Name="EnText" FontSize="9" Foreground="#CCFFFFFF"
+                 HorizontalAlignment="Center" FontFamily="{StaticResource NumFont}" />
+    </StackPanel>
+  </Panel>
+</UserControl>

@@ -1,0 +1,124 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- ===== MD 设计令牌（proto.css → Avalonia） ===== -->
+  <Color x:Key="Bg0">#070A11</Color>
+  <Color x:Key="WindowBg">#0A0E17</Color>
+  <Color x:Key="PanelBg">#131826</Color>
+  <Color x:Key="Panel2Bg">#1A2132</Color>
+  <Color x:Key="Panel3Bg">#222A3E</Color>
+  <Color x:Key="Line">#2D3650</Color>
+  <Color x:Key="LineHi">#3D4A6B</Color>
+  <Color x:Key="Red">#C8102E</Color>
+  <Color x:Key="RedDeep">#8E1620</Color>
+  <Color x:Key="RedHi">#E63946</Color>
+  <Color x:Key="Blue">#3F9FFF</Color>
+  <Color x:Key="Cyan">#5AC8FF</Color>
+  <Color x:Key="Gold">#E6C15C</Color>
+  <Color x:Key="GoldDeep">#B8933A</Color>
+  <Color x:Key="Text">#E9EDF5</Color>
+  <Color x:Key="Muted">#8D97AD</Color>
+  <Color x:Key="Dim">#5C6579</Color>
+  <Color x:Key="Green">#46C08A</Color>
+  <Color x:Key="Amber">#E8A33D</Color>
+  <!-- 钢银：表头 / 选项卡 / 主按钮的中性金属色，与先后手红蓝完全分离 -->
+  <Color x:Key="Steel0">#F4F7FC</Color>
+  <Color x:Key="Steel1">#D5DDEA</Color>
+  <Color x:Key="Steel2">#B6C1D3</Color>
+  <Color x:Key="Steel3">#93A0B4</Color>
+  <Color x:Key="SteelInk">#10151F</Color>
+  <Color x:Key="SteelInkDim">#3B4759</Color>
+  <Color x:Key="SteelEdge">#6B7789</Color>
+
+  <SolidColorBrush x:Key="Bg0Brush" Color="{StaticResource Bg0}" />
+  <SolidColorBrush x:Key="WindowBrush" Color="{StaticResource WindowBg}" />
+  <SolidColorBrush x:Key="PanelBrush" Color="{StaticResource PanelBg}" />
+  <SolidColorBrush x:Key="Panel2Brush" Color="{StaticResource Panel2Bg}" />
+  <SolidColorBrush x:Key="Panel3Brush" Color="{StaticResource Panel3Bg}" />
+  <SolidColorBrush x:Key="LineBrush" Color="{StaticResource Line}" />
+  <SolidColorBrush x:Key="LineHiBrush" Color="{StaticResource LineHi}" />
+  <SolidColorBrush x:Key="RedBrush" Color="{StaticResource Red}" />
+  <SolidColorBrush x:Key="BlueBrush" Color="{StaticResource Blue}" />
+  <SolidColorBrush x:Key="GoldBrush" Color="{StaticResource Gold}" />
+  <SolidColorBrush x:Key="TextBrush" Color="{StaticResource Text}" />
+  <SolidColorBrush x:Key="MutedBrush" Color="{StaticResource Muted}" />
+  <SolidColorBrush x:Key="DimBrush" Color="{StaticResource Dim}" />
+  <SolidColorBrush x:Key="GreenBrush" Color="{StaticResource Green}" />
+  <SolidColorBrush x:Key="AmberBrush" Color="{StaticResource Amber}" />
+  <SolidColorBrush x:Key="SteelBrush" Color="{StaticResource Steel1}" />
+  <SolidColorBrush x:Key="SteelInkBrush" Color="{StaticResource SteelInk}" />
+  <SolidColorBrush x:Key="SteelInkDimBrush" Color="{StaticResource SteelInkDim}" />
+  <SolidColorBrush x:Key="SteelEdgeBrush" Color="{StaticResource SteelEdge}" />
+
+  <FontFamily x:Key="UiFont">Microsoft YaHei UI</FontFamily>
+  <FontFamily x:Key="NumFont">Bahnschrift</FontFamily>
+
+  <!-- 标题栏 / 状态栏 纵向渐变 -->
+  <LinearGradientBrush x:Key="TitleBarBg" StartPoint="0%,0%" EndPoint="0%,100%">
+    <GradientStop Offset="0" Color="#10141F" />
+    <GradientStop Offset="1" Color="#0B0E16" />
+  </LinearGradientBrush>
+  <LinearGradientBrush x:Key="StatusBg" StartPoint="0%,0%" EndPoint="0%,100%">
+    <GradientStop Offset="0" Color="#0E1220" />
+    <GradientStop Offset="1" Color="#0A0D15" />
+  </LinearGradientBrush>
+
+  <!-- 面板头：钢银（通用）/ 蓝＝先手 / 红＝后手（仅先后手语义可用红蓝） -->
+  <LinearGradientBrush x:Key="HeadSteel" StartPoint="0%,0%" EndPoint="0%,100%">
+    <GradientStop Offset="0" Color="#F6F9FD" />
+    <GradientStop Offset="0.48" Color="#D7DFEB" />
+    <GradientStop Offset="0.52" Color="#C3CCDC" />
+    <GradientStop Offset="1" Color="#A0ACBF" />
+  </LinearGradientBrush>
+  <LinearGradientBrush x:Key="HeadRed" StartPoint="0%,0%" EndPoint="0%,100%">
+    <GradientStop Offset="0" Color="#D22838" />
+    <GradientStop Offset="0.48" Color="#A01824" />
+    <GradientStop Offset="1" Color="#6E0F18" />
+  </LinearGradientBrush>
+  <LinearGradientBrush x:Key="HeadBlue" StartPoint="0%,0%" EndPoint="0%,100%">
+    <GradientStop Offset="0" Color="#3F8FD4" />
+    <GradientStop Offset="0.48" Color="#1D5F9E" />
+    <GradientStop Offset="1" Color="#123F6B" />
+  </LinearGradientBrush>
+  <LinearGradientBrush x:Key="HeadDark" StartPoint="0%,0%" EndPoint="0%,100%">
+    <GradientStop Offset="0" Color="#232C42" />
+    <GradientStop Offset="1" Color="#1A2132" />
+  </LinearGradientBrush>
+
+  <!-- 按钮：钢银（通用主行动）/ 蓝＝先手 / 红＝后手 / 金＝卡组，四段纵向渐变 -->
+  <LinearGradientBrush x:Key="BtnSteel" StartPoint="0%,0%" EndPoint="0%,100%">
+    <GradientStop Offset="0" Color="#FBFDFF" />
+    <GradientStop Offset="0.4" Color="#DCE4F0" />
+    <GradientStop Offset="0.7" Color="#B6C1D3" />
+    <GradientStop Offset="1" Color="#8E9BAF" />
+  </LinearGradientBrush>
+  <LinearGradientBrush x:Key="BtnRed" StartPoint="0%,0%" EndPoint="0%,100%">
+    <GradientStop Offset="0" Color="#F04352" />
+    <GradientStop Offset="0.4" Color="#D22030" />
+    <GradientStop Offset="0.7" Color="#A01622" />
+    <GradientStop Offset="1" Color="#7C1019" />
+  </LinearGradientBrush>
+  <LinearGradientBrush x:Key="BtnBlue" StartPoint="0%,0%" EndPoint="0%,100%">
+    <GradientStop Offset="0" Color="#6FC0FF" />
+    <GradientStop Offset="0.4" Color="#2B7FD4" />
+    <GradientStop Offset="0.7" Color="#1C5FA8" />
+    <GradientStop Offset="1" Color="#124A86" />
+  </LinearGradientBrush>
+  <LinearGradientBrush x:Key="BtnGold" StartPoint="0%,0%" EndPoint="0%,100%">
+    <GradientStop Offset="0" Color="#F4D88A" />
+    <GradientStop Offset="0.4" Color="#E6C15C" />
+    <GradientStop Offset="1" Color="#B8933A" />
+  </LinearGradientBrush>
+  <LinearGradientBrush x:Key="NavActive" StartPoint="0%,0%" EndPoint="0%,100%">
+    <GradientStop Offset="0" Color="#F2F6FC" />
+    <GradientStop Offset="0.5" Color="#CFD8E6" />
+    <GradientStop Offset="1" Color="#A4B0C4" />
+  </LinearGradientBrush>
+
+  <!-- 槽位浮起渐变 -->
+  <LinearGradientBrush x:Key="SlotBg" StartPoint="0%,0%" EndPoint="0%,100%">
+    <GradientStop Offset="0" Color="#1A2132" />
+    <GradientStop Offset="1" Color="#151B2A" />
+  </LinearGradientBrush>
+
+</ResourceDictionary>

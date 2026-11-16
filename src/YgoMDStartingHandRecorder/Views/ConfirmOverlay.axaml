@@ -1,0 +1,27 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ctl="clr-namespace:YgoMDStartingHandRecorder.Controls"
+             xmlns:vm="clr-namespace:YgoMDStartingHandRecorder.ViewModels"
+             x:Class="YgoMDStartingHandRecorder.Views.ConfirmOverlay"
+             x:DataType="vm:ConfirmViewModel">
+  <Grid Background="#B804060A">
+    <ctl:CutBorder Cut="14" Width="460" HorizontalAlignment="Center" VerticalAlignment="Center"
+                   Background="{StaticResource Panel2Brush}" BorderBrush="{StaticResource LineHiBrush}"
+                   BorderThickness="1" BoxShadow="0 12 40 0 #99000000">
+      <Grid RowDefinitions="Auto,Auto,Auto">
+        <Border Grid.Row="0" Height="40" Background="{StaticResource HeadSteel}"
+                BorderBrush="{StaticResource SteelEdgeBrush}" BorderThickness="0,0,0,1"
+                BoxShadow="inset 0 1 0 0 #99FFFFFF">
+          <TextBlock Text="{Binding Title}" Foreground="{StaticResource SteelInkBrush}" FontWeight="Bold" FontSize="14"
+                     VerticalAlignment="Center" Margin="16,0" />
+        </Border>
+        <TextBlock Grid.Row="1" Text="{Binding Message}" Foreground="{StaticResource TextBrush}"
+                   FontSize="13" TextWrapping="Wrap" Margin="18,18,18,10" />
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8" Margin="14,0,14,14">
+          <Button Classes="md md-ghost md-sm" Content="取消" Command="{Binding CancelCommand}" />
+          <Button Classes="md md-steel md-sm" Content="{Binding OkText}" Command="{Binding ConfirmCommand}" />
+        </StackPanel>
+      </Grid>
+    </ctl:CutBorder>
+  </Grid>
+</UserControl>

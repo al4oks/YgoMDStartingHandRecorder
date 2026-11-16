@@ -1,0 +1,234 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ctl="clr-namespace:YgoMDStartingHandRecorder.Controls"
+             xmlns:vm="clr-namespace:YgoMDStartingHandRecorder.ViewModels"
+             x:Class="YgoMDStartingHandRecorder.Views.RecordsView"
+             x:DataType="vm:RecordsViewModel">
+
+  <UserControl.Styles>
+    <Style Selector="TextBlock.colhd">
+      <Setter Property="FontSize" Value="11" />
+      <Setter Property="Foreground" Value="{StaticResource DimBrush}" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="TextBlock.cell">
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+    </Style>
+    <!-- 行内容左右缘=表头左右缘 14（ListBox.md Padding 2 + item padding 11 + 主题边框 1；Fluent 滚动条 overlay 不占宽） -->
+    <Style Selector="ListBox#RowList ListBoxItem">
+      <Setter Property="Padding" Value="11,7" />
+    </Style>
+  </UserControl.Styles>
+
+  <Grid RowDefinitions="Auto,*" Margin="14,12">
+    <!-- ===== 工具栏 ===== -->
+    <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+      <StackPanel Orientation="Horizontal" Spacing="8">
+        <ctl:MdSelect Label="会话" Width="250" ItemsSource="{Binding Sessions}"
+                      SelectedItem="{Binding SelectedSession, Mode=TwoWay}" />
+        <ctl:MdSelect Label="卡组" Width="170" ItemsSource="{Binding DeckFilters}"
+                      SelectedItem="{Binding SelectedDeckFilter, Mode=TwoWay}" />
+        <Border Width="1" Height="26" Background="{StaticResource LineBrush}" Margin="4,0" />
+        <Button Classes="md md-ghost md-sm" Content="刷新" Command="{Binding RefreshCommand}" />
+        <Button Classes="md md-ghost md-sm" Content="错误识别映射" Command="{Binding AliasesCommand}" />
+        <Button Classes="md md-dghost md-sm" Content="清理记录" Margin="16,0,0,0" Command="{Binding CleanCommand}" />
+        <Button Classes="md md-dghost md-sm" Content="{Binding CleanShotsLabel}" Command="{Binding CleanShotsCommand}" />
+      </StackPanel>
+      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+        <Button Classes="md md-ghost md-sm" Content="导入记录集" Command="{Binding ImportCommand}" />
+        <Button Classes="md md-ghost md-sm" Content="导出记录集" Command="{Binding ExportCsvCommand}" />
+      </StackPanel>
+    </Grid>
+
+    <Grid Grid.Row="1" ColumnDefinitions="*,500" Margin="0,12,0,0">
+      <!-- ===== 左：对局记录列表 ===== -->
+      <ctl:CutBorder Cut="10" Background="{StaticResource PanelBrush}"
+                     BorderBrush="{StaticResource LineBrush}" BorderThickness="1">
+        <Grid RowDefinitions="Auto,Auto,*">
+          <Border Grid.Row="0" Height="36" Background="{StaticResource HeadSteel}"
+                  BorderBrush="{StaticResource SteelEdgeBrush}" BorderThickness="0,0,0,1"
+                  BoxShadow="inset 0 1 0 0 #99FFFFFF">
+            <Grid ColumnDefinitions="*,Auto" Margin="12,0">
+              <TextBlock Text="对局记录" FontWeight="Bold" FontSize="13" Foreground="{StaticResource SteelInkBrush}"
+                         VerticalAlignment="Center" />
+              <TextBlock Grid.Column="1" Text="{Binding ListMeta}" Foreground="{StaticResource SteelInkDimBrush}"
+                         FontSize="11" VerticalAlignment="Center" />
+            </Grid>
+          </Border>
+          <Grid Grid.Row="1" ColumnDefinitions="30,40,150,*,190,52,40,60" Margin="14,6" Height="22">
+            <TextBlock Grid.Column="1" Classes="colhd" Text="Id" />
+            <TextBlock Grid.Column="2" Classes="colhd" Text="时间" />
+            <TextBlock Grid.Column="3" Classes="colhd" Text="会话" />
+            <TextBlock Grid.Column="4" Classes="colhd" Text="手牌" />
+            <TextBlock Grid.Column="5" Classes="colhd" Text="先后" />
+            <TextBlock Grid.Column="6" Classes="colhd" Text="纠错" HorizontalAlignment="Center" />
+            <TextBlock Grid.Column="7" Classes="colhd" Text="耗时" HorizontalAlignment="Right" />
+          </Grid>
+          <Grid Grid.Row="2">
+            <ListBox x:Name="RowList" Classes="md" SelectionMode="Single" AutomationProperties.Name="记录列表"
+                     ItemsSource="{Binding Rows}" SelectionChanged="OnSelectionChanged"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+              <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="vm:RecordRowViewModel">
+                  <Grid ColumnDefinitions="30,40,150,*,190,52,40,60" Height="54">
+                    <CheckBox Grid.Column="0" IsChecked="{Binding IsChecked, Mode=TwoWay}"
+                              HorizontalAlignment="Center" VerticalAlignment="Center"
+                              AutomationProperties.Name="勾选记录" />
+                    <TextBlock Grid.Column="1" Classes="cell" Text="{Binding Id}" FontFamily="{StaticResource NumFont}" />
+                    <TextBlock Grid.Column="2" Classes="cell" Text="{Binding Time}" FontFamily="{StaticResource NumFont}" />
+                    <TextBlock Grid.Column="3" Classes="cell" Text="{Binding SessionNote}" FontSize="11" />
+                    <ItemsControl Grid.Column="4" ItemsSource="{Binding Thumbs}" ToolTip.Tip="{Binding HandTip}"
+                                  VerticalAlignment="Center">
+                      <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                          <StackPanel Orientation="Horizontal" Spacing="4" />
+                        </ItemsPanelTemplate>
+                      </ItemsControl.ItemsPanel>
+                      <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:ThumbViewModel">
+                          <Grid Width="32" Height="46">
+                            <Image Source="{Binding Thumb}" IsVisible="{Binding HasThumb}" Stretch="UniformToFill" />
+                            <Border IsVisible="{Binding !HasThumb}" Background="{x:Static ctl:MdBrushes.StripeTile}"
+                                    BorderBrush="#3A4358" BorderThickness="1">
+                              <Grid>
+                                <TextBlock Text="?" IsVisible="{Binding Miss}" Foreground="{StaticResource MutedBrush}"
+                                           FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                <Path Data="{StaticResource ImgOffGeo}" IsVisible="{Binding !Miss}" Stroke="{StaticResource MutedBrush}"
+                                      StrokeThickness="1.4" Stretch="Uniform" Width="16" Height="16"
+                                      HorizontalAlignment="Center" VerticalAlignment="Center" />
+                              </Grid>
+                            </Border>
+                          </Grid>
+                        </DataTemplate>
+                      </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <Grid Grid.Column="5" VerticalAlignment="Center">
+                      <ctl:CutBorder Slant="True" Cut="5" Height="22" Width="44" IsVisible="{Binding IsFirst}"
+                                     Background="#293F9FFF" BorderBrush="#733F9FFF" BorderThickness="1">
+                        <TextBlock Text="先手" FontSize="11" FontWeight="Bold" Foreground="{StaticResource BlueBrush}"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+                      </ctl:CutBorder>
+                      <ctl:CutBorder Slant="True" Cut="5" Height="22" Width="44" IsVisible="{Binding IsSecond}"
+                                     Background="#33C8102E" BorderBrush="#80E63946" BorderThickness="1">
+                        <TextBlock Text="后手" FontSize="11" FontWeight="Bold" Foreground="#FF8A94"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+                      </ctl:CutBorder>
+                    </Grid>
+                    <TextBlock Grid.Column="6" Text="✓" IsVisible="{Binding Fixed}"
+                               Foreground="{StaticResource GoldBrush}" FontWeight="Bold" FontSize="14"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <TextBlock Grid.Column="7" Classes="cell" Text="{Binding Ms}" FontFamily="{StaticResource NumFont}"
+                               HorizontalAlignment="Right" />
+                  </Grid>
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+            <StackPanel IsVisible="{Binding !HasRows}" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6">
+              <Grid Width="220" Height="120">
+                <Rectangle Fill="#0D1220" Stroke="{StaticResource LineHiBrush}" StrokeThickness="1" StrokeDashArray="4,3" />
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6">
+                  <Path Data="M8,6 L21,6 M8,12 L21,12 M8,18 L21,18 M4,6 A1.4,1.4 0 1,0 4.01,6 M4,12 A1.4,1.4 0 1,0 4.01,12 M4,18 A1.4,1.4 0 1,0 4.01,18"
+                        Stroke="{StaticResource DimBrush}" StrokeThickness="1.6" Width="24" Height="24" Stretch="Uniform" />
+                  <TextBlock Text="暂无对局记录" Foreground="{StaticResource MutedBrush}" FontWeight="Bold"
+                             HorizontalAlignment="Center" />
+                  <TextBlock Text="捕获页五张齐全后自动入库" Foreground="{StaticResource DimBrush}" FontSize="11"
+                             HorizontalAlignment="Center" />
+                </StackPanel>
+              </Grid>
+            </StackPanel>
+          </Grid>
+        </Grid>
+      </ctl:CutBorder>
+
+      <!-- ===== 右：记录详情 ===== -->
+      <ctl:CutBorder Grid.Column="1" Cut="10" Margin="12,0,0,0" Background="{StaticResource PanelBrush}"
+                     BorderBrush="{StaticResource LineBrush}" BorderThickness="1">
+        <Grid RowDefinitions="Auto,*">
+          <Border Grid.Row="0" Height="36" Background="{StaticResource HeadSteel}"
+                  BorderBrush="{StaticResource SteelEdgeBrush}" BorderThickness="0,0,0,1"
+                  BoxShadow="inset 0 1 0 0 #99FFFFFF">
+            <Grid ColumnDefinitions="*,Auto" Margin="12,0">
+              <TextBlock Text="记录详情" FontWeight="Bold" FontSize="13" Foreground="{StaticResource SteelInkBrush}"
+                         VerticalAlignment="Center" />
+              <TextBlock Grid.Column="1" Text="{Binding DetailMeta}" Foreground="{StaticResource SteelInkDimBrush}"
+                         FontSize="11" VerticalAlignment="Center" FontFamily="{StaticResource NumFont}" />
+            </Grid>
+          </Border>
+          <ScrollViewer Grid.Row="1">
+            <StackPanel Margin="12,14" Spacing="12">
+              <!-- 证据 ROI / 占位 -->
+              <Border Height="170" Background="#05070C" BorderBrush="{StaticResource LineHiBrush}" BorderThickness="1">
+                <Grid>
+                  <Image Source="{Binding Evidence}" IsVisible="{Binding ShowEvidence}" Stretch="Uniform" Margin="4" />
+                  <TextBlock Text="证据截图 · 手牌区域" IsVisible="{Binding ShowEvidence}" FontSize="10"
+                             Foreground="{StaticResource MutedBrush}" VerticalAlignment="Bottom" Margin="8,0,0,4" />
+                  <Grid IsVisible="{Binding !ShowEvidence}" Margin="10">
+                    <Rectangle Fill="#0D1220" Stroke="{StaticResource LineHiBrush}" StrokeThickness="1" StrokeDashArray="4,3" />
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6">
+                      <Path Data="M3,5 L21,5 L21,19 L3,19 Z M3,17 L8,13 L12,16 L15,14 L21,18 M4,4 L20,20"
+                            Stroke="{StaticResource DimBrush}" StrokeThickness="1.6" Width="26" Height="26" Stretch="Uniform" />
+                      <TextBlock Text="{Binding EvidenceTitle}" Foreground="{StaticResource MutedBrush}"
+                                 FontWeight="Bold" HorizontalAlignment="Center" />
+                      <TextBlock Text="{Binding EvidenceDesc}" Foreground="{StaticResource DimBrush}" FontSize="11"
+                                 HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" MaxWidth="380" />
+                    </StackPanel>
+                  </Grid>
+                </Grid>
+              </Border>
+              <!-- 5 槽 -->
+              <ItemsControl ItemsSource="{Binding DetailSlots}" IsVisible="{Binding HasSelection}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="vm:SlotViewModel">
+                    <ctl:CutBorder Cut="7" Margin="0,0,0,7" Background="{StaticResource SlotBg}"
+                                   BorderBrush="{Binding EdgeBrush}" BorderThickness="1"
+                                   BoxShadow="{Binding EdgeShadow}">
+                      <Grid ColumnDefinitions="Auto,*,Auto" Margin="9,6">
+                        <Grid Grid.Column="0" Width="36" Height="52" Margin="0,0,9,0">
+                          <Image Source="{Binding Thumb}" IsVisible="{Binding HasThumb}" Stretch="UniformToFill" />
+                          <Border IsVisible="{Binding !HasThumb}" Background="{x:Static ctl:MdBrushes.StripeTile}"
+                                  BorderBrush="#3A4358" BorderThickness="1">
+                            <Grid>
+                              <TextBlock Text="?" IsVisible="{Binding Miss}" Foreground="{StaticResource MutedBrush}"
+                                         FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                              <Path Data="{StaticResource ImgOffGeo}" IsVisible="{Binding !Miss}" Stroke="{StaticResource MutedBrush}"
+                                    StrokeThickness="1.4" Stretch="Uniform" Width="18" Height="18"
+                                    HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Grid>
+                          </Border>
+                        </Grid>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                          <StackPanel Orientation="Horizontal" Spacing="6">
+                            <TextBlock Text="{Binding Index}" Foreground="{StaticResource DimBrush}" FontSize="11"
+                                       FontFamily="{StaticResource NumFont}" VerticalAlignment="Center" />
+                            <TextBlock Text="{Binding Name}" Foreground="{Binding NameBrush}" FontWeight="Bold" FontSize="13"
+                                       TextTrimming="CharacterEllipsis" />
+                            <Border IsVisible="{Binding ShowSim}" Background="{Binding SimBg}"
+                                    BorderBrush="{Binding SimBorder}" BorderThickness="1" Padding="5,1">
+                              <TextBlock Text="{Binding BadgeText}" Foreground="{Binding SimFg}" FontSize="10"
+                                         FontFamily="{StaticResource NumFont}" />
+                            </Border>
+                            <Border IsVisible="{Binding Corrected}" Background="#24E6C15C" BorderBrush="#73E6C15C"
+                                    BorderThickness="1" Padding="5,1">
+                              <TextBlock Text="已纠正" Foreground="{StaticResource GoldBrush}" FontSize="10" />
+                            </Border>
+                          </StackPanel>
+                          <TextBlock Text="{Binding RawLine}" Foreground="{StaticResource MutedBrush}" FontSize="10.5"
+                                     FontFamily="{StaticResource NumFont}" TextTrimming="CharacterEllipsis" />
+                        </StackPanel>
+                        <Button Grid.Column="2" Classes="md md-ghost md-xs" Content="改/候选"
+                                Command="{Binding FixCommand}" VerticalAlignment="Center" />
+                      </Grid>
+                    </ctl:CutBorder>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </StackPanel>
+          </ScrollViewer>
+        </Grid>
+      </ctl:CutBorder>
+    </Grid>
+  </Grid>
+</UserControl>

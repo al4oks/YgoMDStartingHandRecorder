@@ -1,0 +1,175 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:chrome="clr-namespace:Avalonia.Controls.Chrome;assembly=Avalonia.Controls"
+        xmlns:ctl="clr-namespace:YgoMDStartingHandRecorder.Controls"
+        xmlns:v="clr-namespace:YgoMDStartingHandRecorder.Views"
+        x:Class="YgoMDStartingHandRecorder.Views.MainWindow"
+        x:DataType="v:MainWindow"
+        Title="YGO 起手记录"
+        Width="1280" Height="960"
+        WindowStartupLocation="CenterScreen"
+        WindowDecorations="None"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaTitleBarHeightHint="38"
+        Background="{StaticResource WindowBrush}"
+        FontFamily="{StaticResource UiFont}"
+        FontSize="13"
+        Foreground="{StaticResource TextBrush}">
+
+  <Window.Styles>
+    <!-- 导航 tab：平行四边形斜切，选中钢银渐变 + 底部发光条（不用先后手红蓝） -->
+    <Style Selector="Button.md-tab">
+      <Setter Property="Height" Value="54" />
+      <Setter Property="Padding" Value="22,0" />
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
+      <Setter Property="FontWeight" Value="Bold" />
+      <Setter Property="FontSize" Value="14" />
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Panel>
+            <ctl:CutBorder Slant="True" Cut="10" Background="{TemplateBinding Background}" />
+            <ContentPresenter Content="{TemplateBinding Content}"
+                              HorizontalAlignment="Center" VerticalAlignment="Center"
+                              Margin="{TemplateBinding Padding}" />
+            <Border x:Name="Glow" Height="3" VerticalAlignment="Bottom"
+                    Background="#F6F9FD" BoxShadow="0 0 10 0 #99D5DDEA" IsVisible="False" />
+          </Panel>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="Button.md-tab:pointerover">
+      <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+    </Style>
+    <Style Selector="Button.md-tab-on">
+      <Setter Property="Background" Value="{StaticResource NavActive}" />
+      <Setter Property="Foreground" Value="{StaticResource SteelInkBrush}" />
+    </Style>
+    <Style Selector="Button.md-tab-on:pointerover">
+      <Setter Property="Foreground" Value="{StaticResource SteelInkBrush}" />
+    </Style>
+    <Style Selector="Button.md-tab-on /template/ Border#Glow">
+      <Setter Property="IsVisible" Value="True" />
+    </Style>
+
+    <!-- 标题栏窗口按钮 -->
+    <Style Selector="Button.md-win">
+      <Setter Property="Width" Value="34" />
+      <Setter Property="Height" Value="26" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="{TemplateBinding Background}">
+            <ContentPresenter Content="{TemplateBinding Content}"
+                              HorizontalAlignment="Center" VerticalAlignment="Center" />
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="Button.md-win:pointerover">
+      <Setter Property="Background" Value="#222A3E" />
+      <Setter Property="Foreground" Value="White" />
+    </Style>
+    <Style Selector="Button.md-win-close:pointerover">
+      <Setter Property="Background" Value="{StaticResource RedBrush}" />
+      <Setter Property="Foreground" Value="White" />
+    </Style>
+  </Window.Styles>
+
+  <Grid x:Name="Root">
+    <Rectangle x:Name="ScanOverlay" IsHitTestVisible="False" />
+    <DockPanel>
+    <!-- ===== 自定义标题栏 ===== -->
+    <Border DockPanel.Dock="Top" Height="38" Background="{StaticResource TitleBarBg}"
+            BorderBrush="#1E2638" BorderThickness="0,0,0,1">
+      <Grid ColumnDefinitions="*,Auto" Margin="12,0">
+        <Border Grid.Column="0" Background="Transparent"
+                chrome:WindowDecorationProperties.ElementRole="TitleBar">
+          <StackPanel Orientation="Horizontal" Spacing="9" VerticalAlignment="Center">
+            <Viewbox Width="18" Height="18">
+              <Canvas Width="24" Height="24">
+                <Rectangle Canvas.Left="3" Canvas.Top="2" Width="13" Height="18" RadiusX="1.5" RadiusY="1.5" Fill="#C8102E">
+                  <Rectangle.RenderTransform><RotateTransform Angle="-8" /></Rectangle.RenderTransform>
+                </Rectangle>
+                <Rectangle Canvas.Left="8" Canvas.Top="4" Width="13" Height="18" RadiusX="1.5" RadiusY="1.5" Fill="#E6C15C">
+                  <Rectangle.RenderTransform><RotateTransform Angle="6" /></Rectangle.RenderTransform>
+                </Rectangle>
+                <Rectangle Canvas.Left="9.5" Canvas.Top="6" Width="10" Height="14" RadiusX="1" RadiusY="1" Fill="#131826">
+                  <Rectangle.RenderTransform><RotateTransform Angle="6" /></Rectangle.RenderTransform>
+                </Rectangle>
+              </Canvas>
+            </Viewbox>
+            <TextBlock Text="YGO 起手记录" FontWeight="Bold" FontSize="13" VerticalAlignment="Center" />
+            <TextBlock Text="MASTER DUEL RECORDER" FontSize="10" Foreground="{StaticResource DimBrush}"
+                       FontFamily="{StaticResource NumFont}" VerticalAlignment="Center" />
+          </StackPanel>
+        </Border>
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="2" VerticalAlignment="Center">
+          <Button Classes="md-win" Content="─" Click="OnMinimize" />
+          <Button Classes="md-win" Content="▢" Click="OnMaximize" />
+          <Button Classes="md-win md-win-close" Content="✕" Click="OnClose" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <!-- ===== 状态栏 ===== -->
+    <Border DockPanel.Dock="Bottom" Height="32" Background="{StaticResource StatusBg}"
+            BorderBrush="#1E2638" BorderThickness="0,1,0,0">
+      <Grid ColumnDefinitions="Auto,Auto,*,Auto" Margin="12,0">
+        <Ellipse Grid.Column="0" x:Name="StatusDot" Width="7" Height="7" Fill="{StaticResource GreenBrush}"
+                 VerticalAlignment="Center" Margin="0,0,8,0" />
+        <TextBlock Grid.Column="1" x:Name="StatusText" Text="就绪" Foreground="{StaticResource GreenBrush}"
+                   VerticalAlignment="Center" FontSize="12" />
+        <TextBlock Grid.Column="2" x:Name="StatusPath" Text="" Foreground="{StaticResource DimBrush}"
+                   VerticalAlignment="Center" FontSize="11" Margin="10,0,0,0"
+                   FontFamily="{StaticResource NumFont}" TextTrimming="CharacterEllipsis" />
+        <TextBlock Grid.Column="3" x:Name="StatusCache" Text="" Foreground="{StaticResource MutedBrush}"
+                   VerticalAlignment="Center" FontSize="11" FontFamily="{StaticResource NumFont}" />
+      </Grid>
+    </Border>
+
+    <!-- ===== 导航 ===== -->
+    <Border DockPanel.Dock="Top" Height="54" Background="#0B0F1A"
+            BorderBrush="#1E2638" BorderThickness="0,0,0,1">
+      <Grid ColumnDefinitions="*,Auto">
+        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="4" Margin="10,0,0,0">
+          <Button x:Name="TabCapture" Classes="md-tab md-tab-on" Content="捕获" Click="OnTabCapture" />
+          <Button x:Name="TabRecords" Classes="md-tab" Content="记录" Click="OnTabRecords" />
+          <Button x:Name="TabDecks" Classes="md-tab" Content="卡组" Click="OnTabDecks" />
+          <Button x:Name="TabStorage" Classes="md-tab" Content="存储" Click="OnTabStorage" />
+        </StackPanel>
+        <ctl:CutBorder x:Name="SessionChip" Grid.Column="1" Cut="8" VerticalAlignment="Center" Margin="0,0,14,0"
+                Background="#131826" BorderBrush="{StaticResource LineBrush}" BorderThickness="1"
+                Padding="12,6"
+                ToolTip.Tip="会话在首次「五张齐全」入库时才写入记录库；未分类固定共用一个会话，不计先后手累计">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <Ellipse x:Name="SessionDot" Width="7" Height="7" Fill="{StaticResource AmberBrush}" VerticalAlignment="Center" />
+            <TextBlock Text="当前会话" Foreground="{StaticResource MutedBrush}" FontSize="11" VerticalAlignment="Center" />
+            <TextBlock x:Name="SessionName" Text="—" Foreground="{StaticResource GoldBrush}"
+                       FontWeight="Bold" FontSize="12" VerticalAlignment="Center" />
+            <TextBlock x:Name="SessionState" Text="待入库" Foreground="{StaticResource DimBrush}" FontSize="11"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+        </ctl:CutBorder>
+      </Grid>
+    </Border>
+
+    <!-- ===== 内容区（四页切换） ===== -->
+    <Panel>
+      <v:CaptureView x:Name="ViewCapture" />
+      <v:RecordsView x:Name="ViewRecords" IsVisible="False" />
+      <v:DecksView x:Name="ViewDecks" IsVisible="False" />
+      <v:StorageView x:Name="ViewStorage" IsVisible="False" />
+    </Panel>
+    </DockPanel>
+    <!-- 应用内 overlay（选卡等对话框），罩全窗 -->
+    <ContentControl x:Name="OverlayHost" IsVisible="False"
+                    HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
+  </Grid>
+</Window>

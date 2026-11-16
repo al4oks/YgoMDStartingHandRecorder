@@ -1,0 +1,9 @@
+{
+  "handRoi": { "x": 0.26, "y": 0.83, "w": 0.48, "h": 0.17 },
+  "upscale": 3,
+  "slots": 5,
+  "labelSeparator": "__",
+  "nameSeparator": "+",
+  "skipPrefix": "SKIP_",
+  "unknownSlot": "?"
+}

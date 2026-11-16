@@ -1,0 +1,113 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ctl="clr-namespace:YgoMDStartingHandRecorder.Controls"
+             xmlns:vm="clr-namespace:YgoMDStartingHandRecorder.ViewModels"
+             x:Class="YgoMDStartingHandRecorder.Views.DeckImportOverlay"
+             x:DataType="vm:DeckImportViewModel">
+  <Grid Background="#B804060A">
+    <ctl:CutBorder Cut="14" Width="780" MaxHeight="820" HorizontalAlignment="Center" VerticalAlignment="Center"
+                   Background="{StaticResource Panel2Brush}" BorderBrush="{StaticResource LineHiBrush}"
+                   BorderThickness="1" BoxShadow="0 12 40 0 #99000000">
+      <Grid RowDefinitions="Auto,*,Auto">
+        <Border Grid.Row="0" Height="44" Background="{StaticResource HeadSteel}" Padding="16,0"
+                BorderBrush="{StaticResource SteelEdgeBrush}" BorderThickness="0,0,0,1"
+                BoxShadow="inset 0 1 0 0 #99FFFFFF">
+          <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Text="导入卡组 · 剪贴板" FontWeight="Bold" FontSize="15" Foreground="{StaticResource SteelInkBrush}"
+                       VerticalAlignment="Center" />
+            <TextBlock Grid.Column="1" Text="Konami 官方卡库 · 我的卡组" Foreground="{StaticResource SteelInkDimBrush}"
+                       FontSize="11" VerticalAlignment="Center" />
+          </Grid>
+        </Border>
+        <StackPanel Grid.Row="1" Margin="16,14" Spacing="12">
+          <Grid ColumnDefinitions="*,*,*">
+            <Border Grid.Column="0" Background="{Binding Step1Bg}" BorderBrush="{StaticResource LineBrush}"
+                    BorderThickness="1" Padding="12,9">
+              <StackPanel Orientation="Horizontal" Spacing="9">
+                <ctl:CutBorder Cut="4" Width="22" Height="22" Background="{Binding Num1Bg}">
+                  <TextBlock Text="{Binding Step1Num}" Foreground="White" FontSize="12" FontWeight="Bold"
+                             FontFamily="{StaticResource NumFont}" HorizontalAlignment="Center"
+                             VerticalAlignment="Center" />
+                </ctl:CutBorder>
+                <TextBlock Text="浏览器复制卡组页" Foreground="{Binding Step1Fg}" FontSize="12"
+                           VerticalAlignment="Center" />
+              </StackPanel>
+            </Border>
+            <Border Grid.Column="1" Background="{Binding Step2Bg}" BorderBrush="{StaticResource LineBrush}"
+                    BorderThickness="0,1,1,1" Padding="12,9">
+              <StackPanel Orientation="Horizontal" Spacing="9">
+                <ctl:CutBorder Cut="4" Width="22" Height="22" Background="{Binding Num2Bg}">
+                  <TextBlock Text="{Binding Step2Num}" Foreground="White" FontSize="12" FontWeight="Bold"
+                             FontFamily="{StaticResource NumFont}" HorizontalAlignment="Center"
+                             VerticalAlignment="Center" />
+                </ctl:CutBorder>
+                <TextBlock Text="读剪贴板解析" Foreground="{Binding Step2Fg}" FontSize="12" VerticalAlignment="Center" />
+              </StackPanel>
+            </Border>
+            <Border Grid.Column="2" Background="{Binding Step3Bg}" BorderBrush="{StaticResource LineBrush}"
+                    BorderThickness="0,1,1,1" Padding="12,9">
+              <StackPanel Orientation="Horizontal" Spacing="9">
+                <ctl:CutBorder Cut="4" Width="22" Height="22" Background="{Binding Num3Bg}">
+                  <TextBlock Text="3" Foreground="White" FontSize="12" FontWeight="Bold"
+                             FontFamily="{StaticResource NumFont}" HorizontalAlignment="Center"
+                             VerticalAlignment="Center" />
+                </ctl:CutBorder>
+                <TextBlock Text="预览确认 · 入库" Foreground="{Binding Step3Fg}" FontSize="12"
+                           VerticalAlignment="Center" />
+              </StackPanel>
+            </Border>
+          </Grid>
+          <Border Background="#B3121724" BorderBrush="{StaticResource LineBrush}" BorderThickness="1" Padding="14,10">
+            <StackPanel Spacing="6">
+              <SelectableTextBlock Text="https://www.db.yugioh-card.com/yugiohdb" FontSize="12.5" Foreground="{StaticResource GoldBrush}" />
+              <TextBlock FontSize="12.5" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" LineHeight="22">
+                <Run Text="浏览器打开上方官方卡库地址并" /><Run Text="登录" Foreground="{StaticResource GoldBrush}" FontWeight="Bold" /><Run Text=" → 在 MD 点「上传到 NEURON」→ 上传后在 " /><Run Text="My Deck" Foreground="{StaticResource GoldBrush}" FontWeight="Bold" /><Run Text=" 打开该卡组 → " /><Run Text="Ctrl+A" Foreground="{StaticResource GoldBrush}" FontWeight="Bold" /><Run Text=" 全选、" /><Run Text="Ctrl+C" Foreground="{StaticResource GoldBrush}" FontWeight="Bold" /><Run Text=" 复制 → 回来点「读剪贴板」。" /><LineBreak /><Run Text="List / Gallery" Foreground="{StaticResource GoldBrush}" FontWeight="Bold" /><Run Text=" 两种视图都支持；登录与复制由你手动完成，本软件不自动化浏览器。" />
+              </TextBlock>
+            </StackPanel>
+          </Border>
+          <Grid ColumnDefinitions="Auto,*">
+            <Button Grid.Column="0" Classes="md md-gold" Content="读剪贴板" Command="{Binding ReadCommand}" />
+            <StackPanel Grid.Column="1" Margin="10,0,0,0">
+              <TextBlock Text="卡组名（可改）" Foreground="{StaticResource DimBrush}" FontSize="11" Margin="0,0,0,4" />
+              <TextBox Classes="md" Height="36" Text="{Binding Name, Mode=TwoWay}" VerticalContentAlignment="Center" />
+            </StackPanel>
+          </Grid>
+          <ListBox Classes="md" MaxHeight="300" AutomationProperties.Name="导入预览"
+                   ItemsSource="{Binding Rows}">
+            <ListBox.ItemTemplate>
+              <DataTemplate x:DataType="vm:ImportRowViewModel">
+                <Grid ColumnDefinitions="80,*,60,150" Margin="4,3">
+                  <ctl:CutBorder Grid.Column="0" Slant="True" Cut="4" Height="20" Padding="8,0"
+                                 Background="{Binding SecBg}" HorizontalAlignment="Left">
+                    <TextBlock Text="{Binding SecDisplay}" Foreground="{Binding SecFg}" FontSize="11"
+                               VerticalAlignment="Center" />
+                  </ctl:CutBorder>
+                  <TextBlock Grid.Column="1" Text="{Binding Name}" Foreground="{Binding NameBrush}" FontSize="12.5"
+                             VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                  <TextBlock Grid.Column="2" Text="{Binding CountText}" Foreground="{StaticResource TextBrush}"
+                             FontSize="12" FontFamily="{StaticResource NumFont}" VerticalAlignment="Center" />
+                  <TextBlock Grid.Column="3" Text="{Binding MatchText}" Foreground="{Binding MatchBrush}" FontSize="11"
+                             FontFamily="{StaticResource NumFont}" VerticalAlignment="Center" />
+                </Grid>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+          <TextBlock Text="未命中卡表的行将标红为 MISS（仍可入库，不影响其余卡统计）。"
+                     Foreground="{StaticResource DimBrush}" FontSize="11" />
+          <TextBlock Text="{Binding PStatus}" Foreground="{StaticResource MutedBrush}" FontSize="12"
+                     TextWrapping="Wrap" />
+        </StackPanel>
+        <Border Grid.Row="2" Padding="16,12" BorderBrush="{StaticResource LineBrush}" BorderThickness="0,1,0,0"
+                Background="#990A0D14">
+          <Grid ColumnDefinitions="*,Auto,Auto">
+            <TextBlock Grid.Column="0" Text="{Binding Footer}" Foreground="{StaticResource MutedBrush}" FontSize="12"
+                       VerticalAlignment="Center" />
+            <Button Grid.Column="1" Classes="md md-ghost" Content="关闭" Margin="0,0,10,0"
+                    Command="{Binding CloseCommand}" />
+            <Button Grid.Column="2" Classes="md md-steel" Content="入库" Command="{Binding SaveCommand}" />
+          </Grid>
+        </Border>
+      </Grid>
+    </ctl:CutBorder>
+  </Grid>
+</UserControl>

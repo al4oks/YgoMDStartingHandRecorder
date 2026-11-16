@@ -1,0 +1,110 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ctl="clr-namespace:YgoMDStartingHandRecorder.Controls"
+             xmlns:vm="clr-namespace:YgoMDStartingHandRecorder.ViewModels"
+             x:Class="YgoMDStartingHandRecorder.Views.ComboManageOverlay"
+             x:Name="Root"
+             x:DataType="vm:ComboManageViewModel">
+  <Grid Background="#B804060A">
+    <ctl:CutBorder Cut="14" Width="900" Height="640" HorizontalAlignment="Center" VerticalAlignment="Center"
+                   Background="{StaticResource Panel2Brush}" BorderBrush="{StaticResource LineHiBrush}"
+                   BorderThickness="1" BoxShadow="0 12 40 0 #99000000">
+      <Grid RowDefinitions="Auto,*,Auto">
+        <Border Grid.Row="0" Height="40" Background="{StaticResource HeadSteel}"
+                BorderBrush="{StaticResource SteelEdgeBrush}" BorderThickness="0,0,0,1"
+                BoxShadow="inset 0 1 0 0 #99FFFFFF">
+          <TextBlock Text="组合管理 · 类型 → 条目（必需卡全齐 + 可选集合任意一张）" Margin="16,0" FontWeight="Bold" FontSize="14"
+                     Foreground="{StaticResource SteelInkBrush}" VerticalAlignment="Center" />
+        </Border>
+        <Grid Grid.Row="1" ColumnDefinitions="280,*" Margin="14,12">
+          <!-- 左：类型 -->
+          <Grid RowDefinitions="Auto,*,Auto">
+            <TextBlock Text="组合类型" Foreground="{StaticResource MutedBrush}" FontSize="12" FontWeight="Bold" />
+            <ListBox Grid.Row="1" Classes="md" Margin="0,8,0,8" ItemsSource="{Binding Types}"
+                     SelectedItem="{Binding SelectedType, Mode=TwoWay}"
+                     AutomationProperties.Name="组合类型列表">
+              <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="vm:ComboTypeItem">
+                  <Grid ColumnDefinitions="*,Auto">
+                    <Button Classes="md md-ghost md-xs" Content="{Binding Name}" HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Left"
+                            Command="{Binding #Root.DataContext.SelectTypeCommand}" CommandParameter="{Binding Id}" />
+                    <Button Grid.Column="1" Classes="md md-dghost md-xs" Content="删" Margin="6,0,0,0"
+                            Command="{Binding #Root.DataContext.DeleteTypeCommand}" CommandParameter="{Binding Id}" />
+                  </Grid>
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+            <Grid Grid.Row="2" ColumnDefinitions="*,Auto">
+              <TextBox Classes="md" Height="32" PlaceholderText="新类型名（如 两卡动）"
+                       Text="{Binding NewTypeName, Mode=TwoWay}" VerticalContentAlignment="Center" />
+              <Button Grid.Column="1" Classes="md md-steel md-sm" Content="添加类型" Margin="6,0,0,0"
+                      Command="{Binding AddTypeCommand}" />
+            </Grid>
+          </Grid>
+          <!-- 右：条目 + 选卡 -->
+          <Grid Grid.Column="1" RowDefinitions="Auto,*,Auto,Auto" Margin="14,0,0,0">
+            <TextBlock Text="{Binding SelectedType.Name, StringFormat='条目（{0}）'}" Foreground="{StaticResource MutedBrush}"
+                       FontSize="12" FontWeight="Bold" />
+            <ListBox Grid.Row="1" Classes="md" Margin="0,8,0,8" ItemsSource="{Binding Entries}"
+                     AutomationProperties.Name="组合条目列表">
+              <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="vm:ComboEntryItem">
+                  <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel>
+                      <TextBlock Text="{Binding Name}" Foreground="White" FontSize="11.5" FontWeight="Bold" />
+                      <TextBlock Text="{Binding CardsText}" Foreground="{StaticResource DimBrush}" FontSize="10" TextWrapping="Wrap" />
+                    </StackPanel>
+                    <Button Grid.Column="1" Classes="md md-dghost md-xs" Content="删" VerticalAlignment="Center"
+                            Command="{Binding #Root.DataContext.DeleteEntryCommand}" CommandParameter="{Binding Id}" />
+                  </Grid>
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+            <TextBox Grid.Row="2" Classes="md" Height="32" PlaceholderText="条目名（留空=卡名拼接）"
+                     Text="{Binding NewEntryName, Mode=TwoWay}" VerticalContentAlignment="Center" />
+            <Grid Grid.Row="3" RowDefinitions="Auto,*,Auto,*,Auto" Margin="0,8,0,0">
+              <TextBlock Text="必需卡（每卡各≥1 全齐）" Foreground="{StaticResource DimBrush}" FontSize="10.5" />
+              <ScrollViewer Grid.Row="1" MaxHeight="110">
+                <ItemsControl ItemsSource="{Binding ReqCards}">
+                  <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                      <WrapPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                  </ItemsControl.ItemsPanel>
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:PickCardItem">
+                      <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}" Margin="0,0,10,4"
+                                Content="{Binding Name}" FontSize="11" />
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </ScrollViewer>
+              <TextBlock Grid.Row="2" Text="可选卡（其中任意≥1;不勾=纯全齐条目）" Foreground="{StaticResource DimBrush}" FontSize="10.5" Margin="0,6,0,0" />
+              <ScrollViewer Grid.Row="3" MaxHeight="110">
+                <ItemsControl ItemsSource="{Binding OptCards}">
+                  <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                      <WrapPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                  </ItemsControl.ItemsPanel>
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:PickCardItem">
+                      <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}" Margin="0,0,10,4"
+                                Content="{Binding Name}" FontSize="11" />
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </ScrollViewer>
+              <Button Grid.Row="4" Classes="md md-gold md-sm" Content="添加条目（勾选的卡）" HorizontalAlignment="Right"
+                      Margin="0,8,0,0" Command="{Binding AddEntryCommand}" />
+            </Grid>
+          </Grid>
+        </Grid>
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="14,0,14,14">
+          <Button Classes="md md-ghost md-sm" Content="关闭" Command="{Binding CloseCommand}" />
+        </StackPanel>
+      </Grid>
+    </ctl:CutBorder>
+  </Grid>
+</UserControl>

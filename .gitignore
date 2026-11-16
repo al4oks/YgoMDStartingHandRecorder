@@ -1,0 +1,15 @@
+bin/
+obj/
+/build/
+/captures/
+/records/
+/cache/
+data/cards.zip
+data/cardimg/
+data/cards.meta.json
+/settings.json
+*.user
+tests/fixtures/contract/
+/samples/
+data/cards.json
+data/cards.zip.md5

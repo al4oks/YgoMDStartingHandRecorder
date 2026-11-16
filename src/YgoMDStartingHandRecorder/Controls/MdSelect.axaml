@@ -1,0 +1,42 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ctl="clr-namespace:YgoMDStartingHandRecorder.Controls"
+             x:Class="YgoMDStartingHandRecorder.Controls.MdSelect"
+             x:DataType="ctl:MdSelect">
+  <Grid>
+    <ctl:CutBorder x:Name="Box" Cut="6" Height="38" Background="#0D1220"
+                   BorderBrush="{StaticResource LineBrush}" BorderThickness="1">
+      <Button x:Name="OpenBtn" Background="Transparent" BorderThickness="0" Padding="12,0"
+              HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+              HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center"
+              Cursor="Hand" Click="OnOpen">
+        <Button.Template>
+          <ControlTemplate>
+            <Border Background="{TemplateBinding Background}">
+              <ContentPresenter Content="{TemplateBinding Content}"
+                                Margin="{TemplateBinding Padding}"
+                                HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+            </Border>
+          </ControlTemplate>
+        </Button.Template>
+        <Grid ColumnDefinitions="Auto,*,Auto">
+          <TextBlock Grid.Column="0" x:Name="LabelText" Text=""
+                     Foreground="{StaticResource DimBrush}" FontSize="11" Margin="0,0,8,0" VerticalAlignment="Center" />
+          <TextBlock Grid.Column="1" x:Name="ValueText" Text="—" FontWeight="Bold" FontSize="13"
+                     Foreground="{StaticResource TextBrush}" VerticalAlignment="Center"
+                     TextTrimming="CharacterEllipsis" />
+          <Path Grid.Column="2" Data="M0,0 L5,5 L10,0" Stroke="{StaticResource MutedBrush}" StrokeThickness="1.5"
+                Width="10" Height="6" Margin="8,0,0,0" VerticalAlignment="Center" />
+        </Grid>
+      </Button>
+    </ctl:CutBorder>
+    <Popup x:Name="Drop" PlacementTarget="{Binding #Box}" Placement="Bottom"
+           IsLightDismissEnabled="True">
+      <Border Background="{StaticResource Panel2Brush}" BorderBrush="{StaticResource LineHiBrush}"
+              BorderThickness="1" MaxHeight="340" Padding="2">
+        <ListBox x:Name="List" Classes="md" Background="Transparent" BorderThickness="0"
+                 SelectionChanged="OnPick" />
+      </Border>
+    </Popup>
+  </Grid>
+</UserControl>

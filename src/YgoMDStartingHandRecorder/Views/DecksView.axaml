@@ -1,0 +1,420 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ctl="clr-namespace:YgoMDStartingHandRecorder.Controls"
+             xmlns:vm="clr-namespace:YgoMDStartingHandRecorder.ViewModels"
+             x:Class="YgoMDStartingHandRecorder.Views.DecksView"
+             x:Name="Root"
+             x:DataType="vm:DecksViewModel">
+  <UserControl.Styles>
+    <!-- 卡组 tile：切角卡片按钮（UIA 可 Invoke / 键盘可达） -->
+    <Style Selector="Button.tile">
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+      <Setter Property="VerticalContentAlignment" Value="Stretch" />
+      <Setter Property="Background">
+        <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+          <GradientStop Offset="0" Color="#1A2132" />
+          <GradientStop Offset="1" Color="#121724" />
+        </LinearGradientBrush>
+      </Setter>
+      <Setter Property="Template">
+        <ControlTemplate>
+          <ctl:CutBorder Cut="16" Background="{TemplateBinding Background}"
+                         BorderBrush="{StaticResource LineHiBrush}" BorderThickness="1">
+            <ContentPresenter Content="{TemplateBinding Content}"
+                              HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+          </ctl:CutBorder>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="Button.tile:pointerover /template/ ctl|CutBorder">
+      <Setter Property="BorderBrush" Value="{StaticResource GoldBrush}" />
+    </Style>
+    <!-- 导入 tile：虚线框 + 加号（decks.html .tile.import） -->
+    <Style Selector="Button.tile-imp">
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="Background" Value="#80121724" />
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+      <Setter Property="VerticalContentAlignment" Value="Stretch" />
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Grid Background="{TemplateBinding Background}">
+            <Rectangle Stroke="#3D4A6B" StrokeThickness="1.5" StrokeDashArray="6,4" />
+            <ContentPresenter Content="{TemplateBinding Content}"
+                              HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+          </Grid>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="Button.tile-imp:pointerover /template/ Rectangle">
+      <Setter Property="Stroke" Value="#B8933A" />
+    </Style>
+    <!-- P13：卡格可点（编辑态连点标注），去掉 Fluent 按钮 chrome -->
+    <Style Selector="Button.cellbtn">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+      <Setter Property="VerticalContentAlignment" Value="Stretch" />
+      <Setter Property="Template">
+        <ControlTemplate>
+          <ContentPresenter Content="{TemplateBinding Content}"
+                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+        </ControlTemplate>
+      </Setter>
+    </Style>
+  </UserControl.Styles>
+  <UserControl.Resources>
+    <!-- P10/P11：主/额外共用卡格模板；10 列缩略图比例，理论 + 合/先/后（次数/局数 + 实际上手率，数字着色代替箭头） -->
+    <DataTemplate x:Key="DeckCellTemplate" x:DataType="vm:DeckCardCellViewModel">
+      <Button Classes="cellbtn" Margin="0,0,8,8" AutomationProperties.Name="{Binding Name}"
+              Command="{Binding #Root.DataContext.CardClickCommand}" CommandParameter="{Binding Cid}">
+      <ctl:CutBorder Cut="6" BorderBrush="{Binding CellEdge}" BorderThickness="1">
+        <ctl:CutBorder.Background>
+          <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+            <GradientStop Offset="0" Color="#1A2132" />
+            <GradientStop Offset="1" Color="#131826" />
+          </LinearGradientBrush>
+        </ctl:CutBorder.Background>
+        <StackPanel>
+          <Grid Height="170">
+            <Image Source="{Binding Thumb}" Stretch="UniformToFill" IsVisible="{Binding HasThumb}" />
+            <Grid IsVisible="{Binding !HasThumb}">
+              <Rectangle Fill="{x:Static ctl:MdBrushes.StripeTile}" />
+              <TextBlock Text="?" IsVisible="{Binding Miss}" Foreground="{StaticResource DimBrush}" FontSize="16" FontWeight="Bold"
+                         FontFamily="{StaticResource NumFont}"
+                         HorizontalAlignment="Center" VerticalAlignment="Center" />
+              <Path Data="{StaticResource ImgOffGeo}" IsVisible="{Binding !Miss}" Stroke="{StaticResource DimBrush}"
+                    StrokeThickness="1.5" Stretch="Uniform" Width="20" Height="20"
+                    HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Grid>
+            <ctl:CutBorder Slant="True" Cut="3" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="4"
+                           Padding="5,0" Height="18">
+              <ctl:CutBorder.Background>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                  <GradientStop Offset="0" Color="#E6C15C" />
+                  <GradientStop Offset="1" Color="#B8933A" />
+                </LinearGradientBrush>
+              </ctl:CutBorder.Background>
+              <TextBlock Text="{Binding CountText}" Foreground="#241A05" FontSize="11" FontWeight="Bold"
+                         FontFamily="{StaticResource NumFont}" VerticalAlignment="Center" />
+            </ctl:CutBorder>
+          </Grid>
+          <StackPanel Margin="6,4,6,5" Spacing="1">
+            <TextBlock Text="{Binding Name}" Foreground="{Binding NameBrush}" FontSize="10.5" FontWeight="SemiBold"
+                       Height="27" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" />
+            <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,3,0,0">
+              <TextBlock Text="理论" Foreground="{StaticResource DimBrush}" FontSize="9.5" />
+              <TextBlock Grid.Column="2" Text="{Binding TheoText}" Foreground="{Binding ObsBrush}" FontSize="9.5"
+                         FontFamily="{StaticResource NumFont}" />
+            </Grid>
+            <Grid ColumnDefinitions="Auto,*,Auto">
+              <TextBlock Foreground="{StaticResource DimBrush}" FontSize="9.5"><Run Text="合 " /><Run Text="{Binding TotalCount}" FontFamily="{StaticResource NumFont}" /></TextBlock>
+              <TextBlock Grid.Column="2" Text="{Binding TotalRate}" Foreground="{Binding TotalRateBrush}" FontSize="9.5"
+                         FontFamily="{StaticResource NumFont}" />
+            </Grid>
+            <Grid ColumnDefinitions="Auto,*,Auto">
+              <TextBlock Foreground="{StaticResource DimBrush}" FontSize="9.5"><Run Text="先 " /><Run Text="{Binding FirstCount}" FontFamily="{StaticResource NumFont}" /></TextBlock>
+              <TextBlock Grid.Column="2" Text="{Binding FirstRate}" Foreground="{Binding FirstRateBrush}" FontSize="9.5"
+                         FontFamily="{StaticResource NumFont}" />
+            </Grid>
+            <Grid ColumnDefinitions="Auto,*,Auto">
+              <TextBlock Foreground="{StaticResource DimBrush}" FontSize="9.5"><Run Text="后 " /><Run Text="{Binding SecondCount}" FontFamily="{StaticResource NumFont}" /></TextBlock>
+              <TextBlock Grid.Column="2" Text="{Binding SecondRate}" Foreground="{Binding SecondRateBrush}" FontSize="9.5"
+                         FontFamily="{StaticResource NumFont}" />
+            </Grid>
+          </StackPanel>
+        </StackPanel>
+      </ctl:CutBorder>
+      </Button>
+    </DataTemplate>
+  </UserControl.Resources>
+  <Grid Margin="14,16">
+    <!-- 列表级：tiles -->
+    <DockPanel IsVisible="{Binding ShowList}">
+      <Grid DockPanel.Dock="Top" ColumnDefinitions="Auto,Auto,*,Auto,Auto" Margin="4,0,4,14">
+        <TextBlock Grid.Column="0" Text="我的卡组" FontSize="22" FontWeight="Bold" Foreground="White"
+                   LetterSpacing="3" VerticalAlignment="Center" />
+        <TextBlock Grid.Column="1" Text="{Binding ListMeta}" Foreground="{StaticResource GoldBrush}" FontSize="14"
+                   FontFamily="{StaticResource NumFont}" Margin="14,0,0,0" VerticalAlignment="Center" />
+        <TextBlock Grid.Column="2" Text="点击卡组查看卡图与上手率" Foreground="{StaticResource DimBrush}" FontSize="12"
+                   HorizontalAlignment="Right" VerticalAlignment="Center" />
+        <Button Grid.Column="3" Classes="md md-steel" Content="导入卡组" Command="{Binding ImportCommand}" Margin="14,0,0,0" />
+        <Button Grid.Column="4" Classes="md md-ghost" Content="刷新" Command="{Binding RefreshCommand}" Margin="10,0,0,0" />
+      </Grid>
+      <ScrollViewer>
+        <Grid>
+          <ItemsControl ItemsSource="{Binding Tiles}" IsVisible="{Binding HasTiles}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <UniformGrid Columns="4" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:DeckTileViewModel">
+                <Panel Height="486" Margin="0,0,18,18">
+                <Button Classes="tile" IsVisible="{Binding !IsImport}"
+                        AutomationProperties.Name="{Binding Name}"
+                        Command="{Binding #Root.DataContext.OpenTileCommand}" CommandParameter="{Binding Id}">
+                  <DockPanel>
+                    <Grid DockPanel.Dock="Top" Height="252">
+                      <Image Source="{Binding Cover}" Stretch="UniformToFill" IsVisible="{Binding HasCover}" />
+                      <Grid IsVisible="{Binding !HasCover}">
+                        <Rectangle Fill="{x:Static ctl:MdBrushes.StripeTile}" />
+                        <Path Data="{StaticResource ImgOffGeo}" Stroke="{StaticResource DimBrush}"
+                              StrokeThickness="1.6" Stretch="Uniform" Width="40" Height="40"
+                              HorizontalAlignment="Center" VerticalAlignment="Center" />
+                      </Grid>
+                      <Border IsHitTestVisible="False">
+                        <Border.Background>
+                          <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                            <GradientStop Offset="0.4" Color="#260A0D14" />
+                            <GradientStop Offset="0.96" Color="#F2121724" />
+                          </LinearGradientBrush>
+                        </Border.Background>
+                      </Border>
+                      <ctl:CutBorder Slant="True" Cut="6" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10"
+                                     Background="#D90A0D14" BorderBrush="#B8933A" BorderThickness="1"
+                                     Padding="10,4">
+                        <TextBlock Text="{Binding CountText}" Foreground="{StaticResource GoldBrush}" FontSize="13"
+                                   FontWeight="Bold" FontFamily="{StaticResource NumFont}" />
+                      </ctl:CutBorder>
+                    </Grid>
+                    <StackPanel Margin="18,14,18,16">
+                      <TextBlock Text="{Binding Name}" FontSize="19" FontWeight="Bold" Foreground="White"
+                                 LetterSpacing="1" TextTrimming="CharacterEllipsis" />
+                      <StackPanel Margin="0,12,0,0" Spacing="7">
+                        <Grid ColumnDefinitions="52,*">
+                          <TextBlock Text="构成" Foreground="{StaticResource DimBrush}" FontSize="11" />
+                          <TextBlock Grid.Column="1" Text="{Binding CompText}" Foreground="#CFD6E4" FontSize="12" />
+                        </Grid>
+                        <Grid ColumnDefinitions="52,*">
+                          <TextBlock Text="样本" Foreground="{StaticResource DimBrush}" FontSize="11" />
+                          <TextBlock Grid.Column="1" Text="{Binding SampleText}" Foreground="#CFD6E4" FontSize="12" />
+                        </Grid>
+                        <Grid ColumnDefinitions="52,*">
+                          <TextBlock Text="导入" Foreground="{StaticResource DimBrush}" FontSize="11" />
+                          <TextBlock Grid.Column="1" Text="{Binding ImportedAt}" Foreground="#CFD6E4" FontSize="12"
+                                     FontFamily="{StaticResource NumFont}" />
+                        </Grid>
+                      </StackPanel>
+                      <Border BorderBrush="{StaticResource LineBrush}" BorderThickness="0,1,0,0" Margin="0,12,0,0"
+                              Padding="0,10,0,0">
+                        <Grid ColumnDefinitions="*,Auto">
+                          <TextBlock Text="卡图 · 理论上手 · 实际上手" Foreground="{StaticResource MutedBrush}" FontSize="12"
+                                     TextTrimming="CharacterEllipsis" />
+                          <TextBlock Grid.Column="1" Text="查看 →" Foreground="{StaticResource GoldBrush}" FontSize="12"
+                                     FontFamily="{StaticResource NumFont}" />
+                        </Grid>
+                      </Border>
+                    </StackPanel>
+                  </DockPanel>
+                </Button>
+                <Button Classes="tile-imp" IsVisible="{Binding IsImport}"
+                        AutomationProperties.Name="导入新卡组"
+                        Command="{Binding #Root.DataContext.OpenTileCommand}" CommandParameter="{Binding Id}">
+                  <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="10" Margin="16,0">
+                    <Grid Width="52" Height="52">
+                      <Rectangle Stroke="{StaticResource LineHiBrush}" StrokeThickness="1.5" StrokeDashArray="4,3" />
+                      <TextBlock Text="+" Foreground="{StaticResource MutedBrush}" FontSize="30"
+                                 HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Grid>
+                    <TextBlock Text="导入新卡组" FontSize="16" FontWeight="Bold" Foreground="#CFD6E4"
+                               LetterSpacing="2" HorizontalAlignment="Center" />
+                    <ctl:CutBorder Cut="5" Background="#0D1220" BorderBrush="{StaticResource LineBrush}" BorderThickness="1"
+                                   Padding="8,5" HorizontalAlignment="Stretch">
+                      <StackPanel Spacing="6">
+                        <SelectableTextBlock Text="https://www.db.yugioh-card.com/yugiohdb" Foreground="#CFD6E4" FontSize="10.5"
+                                             TextWrapping="Wrap" TextAlignment="Center" />
+                        <Button Classes="md md-ghost md-xs" Content="复制" HorizontalAlignment="Center"
+                                Command="{Binding #Root.DataContext.CopyDbUrlCommand}" />
+                      </StackPanel>
+                    </ctl:CutBorder>
+                    <TextBlock Text="浏览器打开并登录 → 在 MD 点「上传到 NEURON」&#10;上传后在 My Deck 打开该卡组&#10;Ctrl+A 全选 · Ctrl+C 复制 → 回来点「读剪贴板」"
+                               FontSize="11" Foreground="{StaticResource DimBrush}" TextAlignment="Center" LineHeight="18" />
+                    <ctl:CutBorder Cut="5" Background="{StaticResource BtnGold}" BorderBrush="#8A6D2A" BorderThickness="1"
+                                   Padding="10,5" HorizontalAlignment="Center">
+                      <TextBlock Text="剪贴板导入" Foreground="#241A05" FontSize="12" FontWeight="Bold" />
+                    </ctl:CutBorder>
+                  </StackPanel>
+                </Button>
+                </Panel>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+          <Grid IsVisible="{Binding !HasTiles}" Height="420">
+            <Rectangle Stroke="{StaticResource LineHiBrush}" StrokeThickness="1" StrokeDashArray="5,4" Fill="#99101522" />
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="12">
+              <TextBlock Text="还没有卡组" Foreground="{StaticResource MutedBrush}" FontSize="15" FontWeight="Bold"
+                         HorizontalAlignment="Center" />
+              <TextBlock Text="浏览器登录官方卡库 → MD 上传 NEURON → 复制 My Deck 文本导入" Foreground="{StaticResource DimBrush}" FontSize="12"
+                         HorizontalAlignment="Center" />
+              <Button Classes="md md-steel" Content="导入卡组" Command="{Binding ImportCommand}"
+                      HorizontalAlignment="Center" />
+            </StackPanel>
+          </Grid>
+        </Grid>
+      </ScrollViewer>
+    </DockPanel>
+
+    <!-- 详情级：8 列卡格（P10） -->
+    <DockPanel IsVisible="{Binding ShowDetail}">
+      <Grid DockPanel.Dock="Top" ColumnDefinitions="Auto,Auto,*,Auto,Auto,Auto,Auto" Margin="4,0,4,10">
+        <Button Grid.Column="0" Classes="md md-ghost" Content="← 返回" Command="{Binding BackCommand}" />
+        <StackPanel Grid.Column="1" Margin="14,0,0,0" VerticalAlignment="Center">
+          <TextBlock Text="{Binding DetailName}" FontSize="21" FontWeight="Bold" Foreground="White" LetterSpacing="2" />
+          <TextBlock Text="{Binding DetailComp}" Foreground="{StaticResource MutedBrush}" FontSize="12"
+                     FontFamily="{StaticResource NumFont}" Margin="0,2,0,0" />
+        </StackPanel>
+        <ctl:MdSelect Grid.Column="3" Label="上手率口径" Width="230" ItemsSource="{Binding Scopes}"
+                      SelectedItem="{Binding SelectedScope, Mode=TwoWay}" VerticalAlignment="Center" />
+        <Border Grid.Column="4" Margin="10,0,0,0" Background="#0D1220" BorderBrush="{StaticResource LineBrush}"
+                BorderThickness="1" Padding="12,6" VerticalAlignment="Center">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <TextBlock Text="{Binding SampleText}" Foreground="{StaticResource GoldBrush}" FontSize="13"
+                       FontWeight="Bold" FontFamily="{StaticResource NumFont}" />
+            <TextBlock Text="{Binding SampleSplit}" Foreground="{StaticResource DimBrush}" FontSize="11"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+        </Border>
+        <Button Grid.Column="5" Classes="md md-dghost" Content="删除卡组" Command="{Binding DeleteCommand}"
+                Margin="10,0,0,0" />
+        <Button Grid.Column="6" Classes="md md-ghost" Content="刷新" Command="{Binding RefreshCommand}" Margin="10,0,0,0" />
+      </Grid>
+      <Grid DockPanel.Dock="Top" ColumnDefinitions="Auto,Auto,Auto,Auto,*,Auto" Margin="4,0,4,10">
+        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="5">
+          <Rectangle Width="10" Height="10" Fill="{StaticResource GoldBrush}" />
+          <TextBlock Text="×N = 卡组投入张数" Foreground="{StaticResource DimBrush}" FontSize="11" />
+        </StackPanel>
+        <TextBlock Grid.Column="1" Text="理论 = 超几何起手率（仅主卡组）" Foreground="{StaticResource DimBrush}"
+                   FontSize="11" Margin="18,0,0,0" />
+        <TextBlock Grid.Column="2" Text="合/先/后 = 上手次数/局数 与实际上手率（当前口径）" Foreground="{StaticResource DimBrush}" FontSize="11"
+                   Margin="18,0,0,0" />
+        <TextBlock Grid.Column="3" Foreground="{StaticResource DimBrush}" FontSize="11" Margin="18,0,0,0">
+          <Run Text="数字颜色：" /><Run Text="绿" Foreground="{StaticResource GreenBrush}" /><Run Text="高于理论 " /><Run Text="红" Foreground="#E63946" /><Run Text="低于理论 " /><Run Text="灰" /><Run Text="持平(±1pp)/无样本" />
+        </TextBlock>
+        <TextBlock Grid.Column="5" Text="额外卡组不计上手率" Foreground="{StaticResource DimBrush}" FontSize="11" />
+      </Grid>
+      <!-- ===== P13/P14 类型统计 ===== -->
+      <Border DockPanel.Dock="Top" Margin="4,0,4,10" Background="{StaticResource PanelBrush}"
+              BorderBrush="{StaticResource LineBrush}" BorderThickness="1" Padding="10,8">
+        <StackPanel Spacing="6">
+          <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto">
+            <TextBlock Text="类型统计" FontSize="13" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" />
+            <TextBlock Grid.Column="1" Text="{Binding EditingTagName, StringFormat='编辑中：{0}（连点卡牌标注）'}"
+                       IsVisible="{Binding IsEditing}" Foreground="{StaticResource GoldBrush}" FontSize="11"
+                       Margin="10,0,0,0" VerticalAlignment="Center" />
+            <TextBox Grid.Column="2" Classes="md" Width="110" Height="30" PlaceholderText="新类型名"
+                     Text="{Binding NewTagName, Mode=TwoWay}" VerticalContentAlignment="Center" />
+            <Button Grid.Column="3" Classes="md md-ghost md-sm" Content="添加类型" Margin="6,0,0,0" Command="{Binding AddTagCommand}" />
+            <Button Grid.Column="4" Classes="md md-steel md-sm" Content="退出编辑" Margin="6,0,0,0"
+                    IsVisible="{Binding IsEditing}" Command="{Binding ExitEditCommand}" />
+          </Grid>
+          <ItemsControl ItemsSource="{Binding Tags}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <WrapPanel Orientation="Horizontal" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:TagChipViewModel">
+                <ctl:CutBorder Cut="6" Margin="0,0,8,6" Background="#161C2B" BorderBrush="{Binding ChipEdge}" BorderThickness="1">
+                  <StackPanel Orientation="Horizontal" Spacing="7" Margin="8,5">
+                    <Button Classes="md md-ghost md-xs" Content="{Binding Name}" FontWeight="Bold"
+                            AutomationProperties.Name="{Binding Name}"
+                            Command="{Binding #Root.DataContext.ToggleEditCommand}" CommandParameter="{Binding Id}" />
+                    <TextBlock Text="{Binding CountText}" Foreground="{StaticResource DimBrush}" FontSize="10" VerticalAlignment="Center" />
+                    <TextBlock Text="{Binding TheoText, StringFormat=理论 {0}}" Foreground="#CFD6E4" FontSize="10" FontFamily="{StaticResource NumFont}" VerticalAlignment="Center" />
+                    <TextBlock Text="{Binding TotalText, StringFormat=合 {0}}" Foreground="{Binding TotalBrush}" FontSize="10" FontFamily="{StaticResource NumFont}" VerticalAlignment="Center" />
+                    <TextBlock Text="{Binding MeanText, StringFormat=平均 {0}}" Foreground="#CFD6E4" FontSize="10" FontFamily="{StaticResource NumFont}" VerticalAlignment="Center" />
+                    <Button Classes="md md-ghost md-xs" Content="详情" Command="{Binding #Root.DataContext.OpenTagDetailCommand}" CommandParameter="{Binding Id}" />
+                    <Button Classes="md md-dghost md-xs" Content="删" Command="{Binding #Root.DataContext.DeleteTagCommand}" CommandParameter="{Binding Id}" />
+                  </StackPanel>
+                </ctl:CutBorder>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+          <TextBlock Text="点类型名进入编辑→连点卡牌加入/移除→再点该类型或「退出编辑」结束;「详情」看上手 0~5 张分布与实际平均张数（合/先/后）。"
+                     Foreground="{StaticResource DimBrush}" FontSize="10.5" TextWrapping="Wrap" />
+        </StackPanel>
+      </Border>
+      <!-- ===== P13/P14 组合统计 ===== -->
+      <Border DockPanel.Dock="Top" Margin="4,0,4,10" Background="{StaticResource PanelBrush}"
+              BorderBrush="{StaticResource LineBrush}" BorderThickness="1" Padding="10,8">
+        <StackPanel Spacing="6">
+          <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+            <TextBlock Text="组合统计" FontSize="13" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" />
+            <TextBlock Grid.Column="1" Text="条目=必需卡全齐(+可选集合任意一张);类型=任一条目成立即上手;点类型名编辑条目"
+                       Foreground="{StaticResource DimBrush}" FontSize="10.5" Margin="10,0,0,0" VerticalAlignment="Center" />
+            <TextBox Grid.Column="2" Classes="md" Width="110" Height="30" PlaceholderText="新组合类型名"
+                     Text="{Binding NewComboName, Mode=TwoWay}" VerticalContentAlignment="Center" />
+            <Button Grid.Column="3" Classes="md md-ghost md-sm" Content="添加组合类型" Margin="6,0,0,0" Command="{Binding AddComboTypeCommand}" />
+          </Grid>
+          <ItemsControl ItemsSource="{Binding ComboTypes}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <WrapPanel Orientation="Horizontal" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:ComboTypeChipViewModel">
+                <ctl:CutBorder Cut="6" Margin="0,0,8,6" Background="#161C2B" BorderBrush="{StaticResource LineBrush}" BorderThickness="1">
+                  <StackPanel Orientation="Horizontal" Spacing="7" Margin="8,5">
+                    <Button Classes="md md-ghost md-xs" Content="{Binding Name}" FontWeight="Bold"
+                            AutomationProperties.Name="{Binding Name}"
+                            Command="{Binding #Root.DataContext.ManageComboCommand}" CommandParameter="{Binding Id}" />
+                    <TextBlock Text="{Binding EntryCount, StringFormat={}{0}条目}" Foreground="{StaticResource DimBrush}" FontSize="10" VerticalAlignment="Center" />
+                    <TextBlock Text="{Binding TheoText, StringFormat=理论 {0}}" Foreground="#CFD6E4" FontSize="10" FontFamily="{StaticResource NumFont}" VerticalAlignment="Center" />
+                    <TextBlock Text="{Binding TotalText, StringFormat=合 {0}}" Foreground="{Binding TotalBrush}" FontSize="10" FontFamily="{StaticResource NumFont}" VerticalAlignment="Center" />
+                    <Button Classes="md md-ghost md-xs" Content="详情" Command="{Binding #Root.DataContext.OpenComboDetailCommand}" CommandParameter="{Binding Id}" />
+                    <Button Classes="md md-dghost md-xs" Content="删" Command="{Binding #Root.DataContext.DeleteComboTypeCommand}" CommandParameter="{Binding Id}" />
+                  </StackPanel>
+                </ctl:CutBorder>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+      </Border>
+      <ScrollViewer>
+        <StackPanel Margin="4,0,4,12">
+          <Grid ColumnDefinitions="Auto,Auto,Auto,*,Auto" Margin="0,0,0,10">
+            <Rectangle Grid.Column="0" Width="4" Height="18" Fill="{StaticResource GoldBrush}" Margin="0,0,10,0" />
+            <TextBlock Grid.Column="1" Text="主卡组" FontSize="15" FontWeight="Bold" Foreground="White" />
+            <TextBlock Grid.Column="2" Text="{Binding MainMeta}" Foreground="{StaticResource GoldBrush}" FontSize="12"
+                       FontFamily="{StaticResource NumFont}" Margin="12,0,0,0" VerticalAlignment="Center" />
+            <Border Grid.Column="3" Height="1" Background="{StaticResource LineBrush}" Margin="14,0,0,0"
+                    VerticalAlignment="Center" />
+            <TextBlock Grid.Column="4" Text="按投入张数与上手率复盘" Foreground="{StaticResource DimBrush}" FontSize="11"
+                       Margin="14,0,0,0" VerticalAlignment="Center" />
+          </Grid>
+          <ItemsControl ItemsSource="{Binding MainCells}" ItemTemplate="{StaticResource DeckCellTemplate}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <UniformGrid Columns="10" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+          </ItemsControl>
+          <Grid ColumnDefinitions="Auto,Auto,Auto,*" Margin="0,8,0,10">
+            <Rectangle Grid.Column="0" Width="4" Height="18" Fill="{StaticResource SteelBrush}" Margin="0,0,10,0" />
+            <TextBlock Grid.Column="1" Text="额外卡组" FontSize="15" FontWeight="Bold" Foreground="White" />
+            <TextBlock Grid.Column="2" Text="{Binding ExtraMeta}" Foreground="{StaticResource GoldBrush}" FontSize="12"
+                       FontFamily="{StaticResource NumFont}" Margin="12,0,0,0" VerticalAlignment="Center" />
+            <Border Grid.Column="3" Height="1" Background="{StaticResource LineBrush}" Margin="14,0,0,0"
+                    VerticalAlignment="Center" />
+          </Grid>
+          <ItemsControl ItemsSource="{Binding ExtraCells}" ItemTemplate="{StaticResource DeckCellTemplate}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <UniformGrid Columns="10" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+          </ItemsControl>
+        </StackPanel>
+      </ScrollViewer>
+    </DockPanel>
+  </Grid>
+</UserControl>
