@@ -42,7 +42,7 @@ dotnet publish src/YgoMDStartingHandRecorder -c Release -p:PublishProfile=Single
 
 ## 测试
 
-仓库**不含游戏截图样张**（版权与隐私原因，见下）。headless 测试开箱即跑：
+仓库**不含游戏截图样张**（版权与隐私原因，见下）。headless 测试中 CardLib.Smoke 开箱即跑；Records.Smoke 依赖卡表，先 `python tools/fetch_cards.py`（或程序内下载）生成 `data/cards.json`：
 
 ```bash
 dotnet run --project tests/Ygo.CardLib.Smoke
