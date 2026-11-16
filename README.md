@@ -16,7 +16,28 @@
 
 ## 截图
 
-<!-- TODO: 补 docs/images/ 截图（捕获页 / 记录页 / 卡组页 / 存储页 / 悬浮窗） -->
+> 以下为作者实机 / 种子数据示例；个人路径与玩家名已遮罩。画面中的卡图缩略图为 Konami 素材（见「版权与声明」）。
+
+**捕获页**（空状态 → 一键截图识别入库）：
+
+![捕获页空状态](docs/images/capture-empty.png)
+![捕获页识别结果](docs/images/capture-result.png)
+
+**记录页**（会话/卡组过滤 + 证据图核对 + 逐槽纠正）：
+
+![记录页](docs/images/records.png)
+
+**卡组页**（卡组一览 + 官方卡组站剪贴板导入）：
+
+![卡组页](docs/images/decks.png)
+
+**卡组详情**（类型/组合统计 + 理论 vs 实际上手率）：
+
+![卡组详情](docs/images/deck-detail.png)
+
+**存储页**（卡表更新 / 缓存目录改路径与清理）：
+
+![存储页](docs/images/storage.png)
 
 ## 环境要求
 
@@ -71,6 +92,18 @@ tools/                           fetch_cards.py / check_labels.py（纯标准库
 data/config.json                 识别契约（handRoi/upscale/slots/分隔符）
 docs/                            usage / design
 ```
+
+## 开发心得
+
+<!-- 作者填写：设计取舍、踩坑与收获。可参考话题：只读像素的合规边界、PrintWindow/WGC 双捕获路径、两段 OCR 与超框卡的卡组约束、超几何上手率统计、Avalonia 12 迁移与自定义标题栏、单文件发布的体积取舍等。 -->
+
+*（作者撰写中……）*
+
+## 已知缺失功能
+
+<!-- 作者填写：当前版本尚未实现 / 计划中的功能清单（含调研过但未开工的方向）。 -->
+
+*（作者整理中……）*
 
 ## 卡表数据来源与鸣谢（ygocdb / 百鸽）
 
